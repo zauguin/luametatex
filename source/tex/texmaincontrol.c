@@ -68,7 +68,7 @@ main_control_state_info lmt_main_control_state = {
     A few helpers:
 */
 
-inline scaled tex_aux_checked_dimen1(scaled v)
+inline static scaled tex_aux_checked_dimen1(scaled v)
 {
     if (v > max_dimen) {
         return max_dimen;
@@ -79,7 +79,7 @@ inline scaled tex_aux_checked_dimen1(scaled v)
     }
 }
 
-inline scaled tex_aux_checked_dimen2(scaled v)
+inline static scaled tex_aux_checked_dimen2(scaled v)
 {
     if (v > max_dimen) {
         return max_dimen;
@@ -1683,7 +1683,7 @@ void tex_local_control(int obeymode)
     tex_unsave_full_scanner_status(saved_full_status);
 }
 
-inline int tex_aux_is_iterator_value(halfword tokeninfo)
+inline static int tex_aux_is_iterator_value(halfword tokeninfo)
 {
     if (tokeninfo >= cs_token_flag) {
         halfword cs = tokeninfo - cs_token_flag;

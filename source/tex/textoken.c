@@ -692,7 +692,7 @@ halfword tex_show_token_list(halfword p, halfword q, int l, int asis)
 } while (0)
 */
 
-inline halfword get_unichar_from_buffer(int *b)
+inline static halfword get_unichar_from_buffer(int *b)
 {
     halfword a = (halfword) ((const unsigned char) *(lmt_fileio_state.io_buffer + *b));
     if (a <= 0x80) {

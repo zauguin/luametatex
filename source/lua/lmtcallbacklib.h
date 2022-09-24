@@ -88,7 +88,7 @@ inline static int lmt_callback_call      (lua_State *L, int i, int o, int top) {
 
 extern int  lmt_callback_okay            (lua_State *L, int i, int *top);
 extern void lmt_callback_error           (lua_State *L, int top, int i);
-inline void lmt_callback_wrapup          (lua_State *L, int top)  { lua_settop(L, top); }
+inline static void lmt_callback_wrapup   (lua_State *L, int top)  { lua_settop(L, top); }
 
 extern int  lmt_run_callback             (lua_State *L, int i, const char *values, ...);
 extern int  lmt_run_and_save_callback    (lua_State *L, int i, const char *values, ...);

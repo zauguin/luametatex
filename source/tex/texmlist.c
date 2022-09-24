@@ -222,7 +222,7 @@ typedef enum limits_modes {
     limits_horizontal_mode, // no limits 
 } limits_modes;
 
-inline void tex_math_wipe_kerns(kernset *kerns) {
+static inline void tex_math_wipe_kerns(kernset *kerns) {
     if (kerns) { 
         kerns->topright = 0;
         kerns->topleft = 0;
@@ -239,7 +239,7 @@ inline void tex_math_wipe_kerns(kernset *kerns) {
     }
 }
 
-inline void tex_math_copy_kerns(kernset *kerns, kernset *parent) {
+static inline void tex_math_copy_kerns(kernset *kerns, kernset *parent) {
     if (kerns && parent) { 
         kerns->topright = parent->topright;
         kerns->topleft = parent->topleft;

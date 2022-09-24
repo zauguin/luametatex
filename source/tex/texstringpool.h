@@ -76,7 +76,7 @@ extern string_pool_info lmt_string_pool_state;
 
 /*tex Forget the last character in the pool. */
 
-inline void       tex_flush_char(void)       { --lmt_string_pool_state.string_temp_top; }
+inline static void tex_flush_char(void)      { --lmt_string_pool_state.string_temp_top; }
 
 extern strnumber  tex_make_string            (void);
 extern strnumber  tex_push_string            (const unsigned char *s, int l);

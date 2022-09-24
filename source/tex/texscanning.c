@@ -11,7 +11,7 @@ static void tex_aux_scan_expression (int level);
     A helper.
 */
 
-inline void tex_push_back(halfword tok, halfword cmd, halfword chr)
+inline static void tex_push_back(halfword tok, halfword cmd, halfword chr)
 {
     if (cmd != spacer_cmd && tok != deep_frozen_relax_token && ! (cmd == relax_cmd && chr == no_relax_code)) {
         tex_back_input(tok);

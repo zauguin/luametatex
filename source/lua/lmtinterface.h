@@ -1721,17 +1721,17 @@ inline static void lua_set_boolean_by_index(lua_State *L, int a, int b)
     lua_rawseti(L, -2, a);
 }
 
-inline void lmt_string_to_buffer(const char *str)
+inline static void lmt_string_to_buffer(const char *str)
 {
     luaL_addstring(lmt_lua_state.used_buffer, str);
 }
 
-inline void lmt_char_to_buffer(char c)
+inline static void lmt_char_to_buffer(char c)
 {
     luaL_addchar(lmt_lua_state.used_buffer, c);
 }
 
-inline void lmt_newline_to_buffer(void)
+inline static void lmt_newline_to_buffer(void)
 {
     luaL_addchar(lmt_lua_state.used_buffer, '\n');
 }

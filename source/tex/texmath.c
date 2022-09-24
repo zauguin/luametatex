@@ -957,7 +957,7 @@ int tex_show_math_node(halfword n, int threshold, int max)
     return 1;
 }
 
-inline halfword tex_aux_valid_delimiter(halfword d)
+inline static halfword tex_aux_valid_delimiter(halfword d)
 {
     return (d && (delimiter_small_family(d) || delimiter_small_character(d) || delimiter_large_family(d) || delimiter_large_character(d))) ? d : null;
 }

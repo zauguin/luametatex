@@ -836,7 +836,7 @@ extern save_state_info lmt_save_state;
 # define saved_value(A) lmt_save_state.save_stack[lmt_save_state.save_stack_data.ptr + (A)].saved_value
 # define saved_word(A)  lmt_save_state.save_stack[lmt_save_state.save_stack_data.ptr + (A)].saved_word
 
-inline void tex_set_saved_record(halfword ptr, quarterword type, quarterword level, halfword value)
+inline static void tex_set_saved_record(halfword ptr, quarterword type, quarterword level, halfword value)
 {
     saved_type(ptr)  = type;
     saved_level(ptr) = level;

@@ -1754,7 +1754,7 @@ inline static void tex_add_noad_option    (halfword a, halfword r) { noad_option
 inline static void tex_remove_noad_option (halfword a, halfword r) { noad_options(a) &= ~(r | noad_options(a)); }
 inline static int  tex_has_noad_option    (halfword a, halfword r) { return (noad_options(a) & r) == r; }
 
-inline int has_noad_no_script_option(halfword n, halfword option)
+inline static int has_noad_no_script_option(halfword n, halfword option)
 {
     switch (node_type(n)) {
         case simple_noad:
@@ -2622,8 +2622,8 @@ typedef enum glue_signs {
 
 # define normal_glue_multiplier 0.0
 
-inline halfword tex_checked_glue_sign  (halfword sign)  { return ((sign  < min_glue_sign ) || (sign  > max_glue_sign )) ? normal_glue_sign  : sign ; }
-inline halfword tex_checked_glue_order (halfword order) { return ((order < min_glue_order) || (order > max_glue_order)) ? normal_glue_order : order; }
+inline static halfword tex_checked_glue_sign  (halfword sign)  { return ((sign  < min_glue_sign ) || (sign  > max_glue_sign )) ? normal_glue_sign  : sign ; }
+inline static halfword tex_checked_glue_order (halfword order) { return ((order < min_glue_order) || (order > max_glue_order)) ? normal_glue_order : order; }
 
 /*tex
     These are reserved nodes that sit at the start of main memory. We could actually just allocate
