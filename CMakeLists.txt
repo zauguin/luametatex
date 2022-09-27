@@ -114,29 +114,24 @@ if (MSVC)
  else()
 
     if (CMAKE_C_COMPILER_ID STREQUAL "Clang")
-
-        # why not -03
-
-        add_compile_options(
-            -O2
-        )
-
         add_definitions(-DLMT_COMPILER_USED="clang")
-
     else()
-
-        add_compile_options(
-            -O3
-          # -g0
-          # -mtune=nocona # fails on arm so more testing needed
-        )
-
         add_definitions(-DLMT_COMPILER_USED="gcc")
-
-      # add_compile_options(-pg)
-      # add_link_options(-pg)
-
     endif()
+
+    if (CMAKE_SYSTEM_NAME MATCHES "Windows")
+        add_link_options(
+            $<$<CONFIG:RELEASE>:-Wl,--discard-all>
+            $<$<CONFIG:RELEASE>:-Wl,--strip-debug>
+        )
+    elseif (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    else()
+        add_link_options(
+            $<$<CONFIG:RELEASE>:-Wl,--discard-all>
+            $<$<CONFIG:RELEASE>:-Wl,--strip-debug>
+        )
+    endif()
+
 
     add_compile_options(
         -Wall

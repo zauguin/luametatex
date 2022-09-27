@@ -7,7 +7,6 @@ set(luametatex_sources
 add_executable(luametatex ${luametatex_sources})
 
 target_include_directories(luametatex PRIVATE
-    .
     source/.
     source/luacore/lua54/src
 )
@@ -77,8 +76,5 @@ if (DEFINED LMT_OPTIMIZE)
 elseif (CMAKE_HOST_SOLARIS)
     # no strip
 elseif (CMAKE_C_COMPILER_ID MATCHES "GNU")
-    # -g -S -d : remove all debugging symbols & sections
-    # -x       : remove all non-global symbols
-    # -X       : remove any compiler-generated symbols
-    add_custom_command(TARGET luametatex POST_BUILD COMMAND ${CMAKE_STRIP} -g -S -d -x luametatex${CMAKE_EXECUTABLE_SUFFIX})
+    add_custom_command(TARGET luametatex POST_BUILD COMMAND $<$<CONFIG:RELEASE>:${CMAKE_STRIP}> $<TARGET_FILE:luametatex>)
 endif()
