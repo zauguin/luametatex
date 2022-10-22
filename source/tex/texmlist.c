@@ -1135,13 +1135,13 @@ halfword tex_make_extensible(halfword fnt, halfword chr, scaled target, scaled m
                     if (overlap < initial) {
                         initial = overlap;
                     }
-                    if (advance == 0) {
-                        /*tex for tfm fonts (so no need for scaling) */
-                        advance = tex_aux_math_x_size_scaled(fnt, tex_char_width_from_font(fnt, e->glyph), size); /* todo: combine */
+                 // if (advance == 0) {
+                 //     /*tex for tfm fonts (so no need for scaling) */
+                 //     advance = tex_aux_math_x_size_scaled(fnt, tex_char_width_from_font(fnt, e->glyph), size); /* todo: combine */
                         if (advance <= 0) {
                             tex_formatted_error("fonts", "bad horizontal extensible character %i in font %i", chr, fnt);
                         }
-                    }
+                 // }
                     max_natural += advance - initial;
                     overlap = tex_aux_math_x_size_scaled(fnt, e->end_overlap, size);
                 } else {
@@ -1155,13 +1155,13 @@ halfword tex_make_extensible(halfword fnt, halfword chr, scaled target, scaled m
                         if (overlap < initial) {
                             initial = overlap;
                         }
-                        if (advance == 0) {
-                            /*tex for tfm fonts (so no need for scaling) */
-                            advance = tex_aux_math_x_size_scaled(fnt, tex_char_width_from_font(fnt, e->glyph), size); /* todo: combine */
+                     // if (advance == 0) {
+                     //     /*tex for tfm fonts (so no need for scaling) */
+                     //     advance = tex_aux_math_x_size_scaled(fnt, tex_char_width_from_font(fnt, e->glyph), size); /* todo: combine */
                             if (advance <= 0) {
                                 tex_formatted_error("fonts", "bad horizontal extensible character %i in font %i", chr, fnt);
                             }
-                        }
+                     // }
                         max_natural += advance - initial;
                         overlap = tex_aux_math_x_size_scaled(fnt, e->end_overlap, size);
                         pieces--;
@@ -1179,12 +1179,12 @@ halfword tex_make_extensible(halfword fnt, halfword chr, scaled target, scaled m
                     if (overlap < initial) {
                         initial = overlap;
                     }
-                    if (advance == 0) {
-                        advance = tex_aux_math_y_size_scaled(fnt, tex_char_total_from_font(fnt, e->glyph), size); /* todo: combine */
+                 // if (advance == 0) {
+                 //     advance = tex_aux_math_y_size_scaled(fnt, tex_char_total_from_font(fnt, e->glyph), size); /* todo: combine */
                         if (advance <= 0) {
                             tex_formatted_error("fonts", "bad vertical extensible character %i in font %i", chr, fnt);
                         }
-                    }
+                 // }
                     max_natural += advance - initial;
                     overlap = tex_aux_math_y_size_scaled(fnt, e->end_overlap, size);
                 } else {
@@ -1198,12 +1198,12 @@ halfword tex_make_extensible(halfword fnt, halfword chr, scaled target, scaled m
                         if (overlap < initial) {
                             initial = overlap;
                         }
-                        if (advance == 0) {
-                            advance = tex_aux_math_y_size_scaled(fnt, tex_char_total_from_font(fnt, e->glyph), size); /* todo: combine */
+                     // if (advance == 0) {
+                     //     advance = tex_aux_math_y_size_scaled(fnt, tex_char_total_from_font(fnt, e->glyph), size); /* todo: combine */
                             if (advance <= 0) {
                                 tex_formatted_error("fonts", "bad vertical extensible character %i in font %i", chr, fnt);
                             }
-                        }
+                     // }
                         max_natural += advance - initial;
                         overlap = tex_aux_math_y_size_scaled(fnt, e->end_overlap, size);
                         pieces--;
@@ -1263,15 +1263,37 @@ halfword tex_make_extensible(halfword fnt, halfword chr, scaled target, scaled m
     }
     /*tex Set glue so as to stretch the connections if needed. */
     if (target > max_natural && max_shrink > 0) {
-        scaled delta = target - max_natural;
-        /*tex Don't stretch more than |s_max|. */
-        if (delta > max_shrink) {
-            delta = max_shrink;
-        }
-        box_glue_order(box) = normal_glue_order;
-        box_glue_sign(box) = stretching_glue_sign;
-        box_glue_set(box) = (glueratio) (delta / (glueratio) max_shrink);
-        max_natural += delta;
+     // if (1) {
+     //     halfword b;
+     //     if (horizontal) {
+     //         b = tex_hpack(box_list(box), target, packing_exactly, (singleword) math_direction_par, holding_none_option);
+     //     } else {
+     //         b = tex_vpack(box_list(box), target, packing_exactly, max_dimen, (singleword) math_direction_par, holding_none_option);
+     //     }
+     //     box_glue_order(box) = box_glue_order(b);
+     //     box_glue_sign(box) = box_glue_sign(b);
+     //     box_glue_set(box) = box_glue_set(b);
+     //     box_list(b) = null;
+     //     tex_flush_node(b);
+     //     max_natural = target;
+     // } else {
+            scaled delta = target - max_natural;
+            /*tex Don't stretch more than |s_max|. */
+            if (delta > max_shrink) {
+                if (tracing_math_par >= 1) {
+                    tex_begin_diagnostic();
+                    tex_print_format("[math: extensible clipped, target %D, natural %D, shrink %D, clip %D]",
+                        target, pt_unit, max_natural, pt_unit, max_shrink, pt_unit, delta - max_shrink, pt_unit
+                    );
+                    tex_end_diagnostic();
+                }
+                delta = max_shrink;
+            }
+            box_glue_order(box) = normal_glue_order;
+            box_glue_sign(box) = stretching_glue_sign;
+            box_glue_set(box) = (glueratio) (delta / (glueratio) max_shrink);
+            max_natural += delta;
+     // }
     }
     if (horizontal) {
         box_width(box) = max_natural;
