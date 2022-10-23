@@ -1766,4 +1766,14 @@ extern halfword tex_explicit_disc_penalty  (halfword mode);
 # define insert_maxheight(A)  dimen_register(A)
 # define insert_distance(A)   skip_register(A)
 
+typedef enum cs_errors {
+    cs_no_error,
+    cs_null_error,
+    cs_below_base_error,
+    cs_undefined_error, 
+    cs_out_of_range_error,
+} cs_errors;
+
+extern int tex_cs_state(halfword p) ;
+
 # endif

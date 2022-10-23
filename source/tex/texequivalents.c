@@ -1970,3 +1970,18 @@ int tex_located_save_value(int id)
     }
     return 0;
 }
+
+extern int tex_cs_state(halfword p) 
+{
+    if (p == null_cs) {
+        return cs_null_error;
+    } else if (p < hash_base) {
+        return cs_below_base_error;
+    } else if (p == undefined_control_sequence) {
+        return cs_undefined_error;
+    } else if (eqtb_out_of_range(p)) {
+        return cs_out_of_range_error;
+    } else {
+        return cs_no_error;
+    }
+}
