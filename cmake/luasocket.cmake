@@ -49,13 +49,16 @@ if (WIN32)
         wsock32
         ws2_32
     )
-endif()
-
-if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_definitions(luasocket PRIVATE
         LUASOCKET_INET_PTON
     )
 endif()
+
+# if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+#     target_compile_definitions(luasocket PRIVATE
+#         LUASOCKET_INET_PTON
+#     )
+# endif()
 
 
 
