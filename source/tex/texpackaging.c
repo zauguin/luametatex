@@ -1039,7 +1039,7 @@ halfword tex_hpack(halfword p, scaled w, int m, singleword pack_direction, int r
     /*tex natural width */
     scaled x = 0;
     /*tex the current direction */
-    singleword hpack_dir = pack_direction == direction_unknown ? text_direction_par : pack_direction;
+    singleword hpack_dir = pack_direction == direction_unknown ?(singleword) text_direction_par : pack_direction;
     int disc_level = 0;
     halfword pack_interrupt[8];
     scaled font_stretch = 0;
@@ -1575,7 +1575,7 @@ halfword tex_hpack(halfword p, scaled w, int m, singleword pack_direction, int r
 halfword tex_filtered_hpack(halfword p, halfword qt, scaled w, int m, int grp, halfword d, int just_pack, halfword attr, int state, int retain)
 {
     halfword head;
-    singleword direction = checked_direction_value(d);
+    singleword direction = (singleword) checked_direction_value(d);
     (void) state; /*tex Why do we pass it? Probably a left-over from an experiment. */
     if (just_pack) {
         head = node_next(p);
@@ -1603,7 +1603,7 @@ halfword tex_filtered_hpack(halfword p, halfword qt, scaled w, int m, int grp, h
 
 scaledwhd tex_natural_hsizes(halfword p, halfword pp, glueratio g_mult, int g_sign, int g_order)
 {
-    scaledwhd siz = { 0, 0, 0 };
+    scaledwhd siz = { 0, 0, 0, 0 };
     scaled gp = 0;
     scaled gm = 0;
     while (p && p != pp) {
@@ -1757,7 +1757,7 @@ scaledwhd tex_natural_hsizes(halfword p, halfword pp, glueratio g_mult, int g_si
 
 scaledwhd tex_natural_vsizes(halfword p, halfword pp, glueratio g_mult, int g_sign, int g_order)
 {
-    scaledwhd siz = { 0, 0, 0 };
+    scaledwhd siz = { 0, 0, 0, 0 };
     scaled gp = 0;
     scaled gm = 0;
     while (p && p != pp) {
@@ -1974,7 +1974,7 @@ halfword tex_natural_hsize(halfword p, halfword *correction)
 
 halfword tex_natural_vsize(halfword p)
 {
-    scaledwhd siz = { 0, 0, 0 };
+    scaledwhd siz = { 0, 0, 0, 0 };
     while (p) {
         switch (node_type(p)) {
             case hlist_node:
@@ -2293,7 +2293,7 @@ halfword tex_filtered_vpack(halfword p, scaled h, int m, scaled maxdepth, int gr
     if (! just_pack) {
         q = lmt_vpack_filter_callback(q, h, m, maxdepth, grp, direction, attr);
     }
-    q = tex_vpack(q, h, m, maxdepth, checked_direction_value(direction), retain);
+    q = tex_vpack(q, h, m, maxdepth, (singleword) checked_direction_value(direction), retain);
     if (q && normalize_par_mode_permitted(normalize_par_mode_par, flatten_v_leaders_mode) && ! is_box_package_state(state, package_u_leader_delayed)) {
         tex_flatten_leaders(q, NULL);
     }
@@ -3111,7 +3111,7 @@ halfword tex_vert_break(halfword p, scaled h, scaled d)
         prev_p = p;
         p = node_next(prev_p);
     }
-    return best_place;
+    return best_place; /* unreachable */
 }
 
 /*tex

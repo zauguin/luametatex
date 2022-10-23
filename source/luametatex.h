@@ -313,6 +313,7 @@ extern version_state_info lmt_version_state;
 # include "lua/lmtlanguagelib.h"
 # include "lua/lmtfontlib.h"
 # include "lua/lmtlualib.h"
+# include "lua/lmtluaclib.h"
 # include "lua/lmttexlib.h"
 # include "lua/lmtenginelib.h"
 

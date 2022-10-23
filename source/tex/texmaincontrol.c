@@ -1594,8 +1594,7 @@ int tex_main_control(void)
             return cur_chr == dump_code;
         }
     }
-    /*tex not reached */
-    return 0;
+    return 0; /* unreachable */
 }
 
 /*tex
@@ -2242,9 +2241,9 @@ static void tex_aux_run_discretionary(void)
         case explicit_discretionary_code:
             /*tex |\-| */
             if (hyphenation_permitted(hyphenation_mode_par, explicit_hyphenation_mode)) {
+                int c = tex_get_pre_hyphen_char(cur_lang_par);
                 halfword d = tex_new_disc_node(explicit_discretionary_code);
                 tex_tail_append(d);
-                int c = tex_get_pre_hyphen_char(cur_lang_par);
                 if (c > 0) {
                     tex_set_disc_field(d, pre_break_code, tex_new_char_node(glyph_unset_subtype, cur_font_par, c, 1));
                 }
@@ -2259,10 +2258,10 @@ static void tex_aux_run_discretionary(void)
         case mathematics_discretionary_code:
             /*tex |-| */
             if (hyphenation_permitted(hyphenation_mode_par, automatic_hyphenation_mode)) {
+                halfword c = tex_get_pre_exhyphen_char(cur_lang_par);
                 halfword d = tex_new_disc_node(automatic_discretionary_code);
                 tex_tail_append(d);
                 /*tex As done in hyphenator: */
-                halfword c = tex_get_pre_exhyphen_char(cur_lang_par);
                 if (c <= 0) {
                     c = ex_hyphen_char_par;
                 }

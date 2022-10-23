@@ -243,7 +243,6 @@ halfword tex_size_of_style(halfword style)
         case script_script_style:
         case cramped_script_script_style:
             return script_script_size;
-            break;
         default:
             return text_size;
     }
@@ -788,7 +787,7 @@ halfword tex_new_sub_box(halfword curbox)
     return noad;
 }
 
-quarterword tex_aux_set_math_char(halfword target, mathcodeval *mval, mathdictval *dval)
+static quarterword tex_aux_set_math_char(halfword target, mathcodeval *mval, mathdictval *dval)
 {
     halfword hmcode = tex_get_hm_code(mval->character_value);
     kernel_math_character(target) = mval->character_value;
@@ -1121,13 +1120,13 @@ static void tex_aux_display_fence_noad(halfword n, int threshold, int max)
     if (noad_depth(n)) {
         tex_print_format(", depth %D", noad_depth(n), pt_unit);
     }
-    if (get_noad_main_class(n) >= 0) {
+    if (get_noad_main_class(n) != unset_noad_class) {
         tex_print_format(", class %i", get_noad_main_class(n));
     }
-    if (get_noad_left_class(n) >= 0) {
+    if (get_noad_left_class(n) != unset_noad_class) {
         tex_print_format(", leftclass %i", get_noad_left_class(n));
     }
-    if (get_noad_right_class(n) >= 0) {
+    if (get_noad_right_class(n) != unset_noad_class) {
         tex_print_format(", rightclass %i", get_noad_right_class(n));
     }
     if (noad_source(n) != 0) {

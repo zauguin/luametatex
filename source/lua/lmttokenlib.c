@@ -2147,7 +2147,7 @@ static int tokenlib_future_expand(lua_State *L)
                 return 0;
         }
     }
-    return 0;
+ // return 0;
 }
 
 static int tokenlib_scan_code(lua_State *L)
@@ -2735,8 +2735,9 @@ static int tokenlib_get_fields(lua_State *L)
                 size_t l;
                 const char *str = lua_tolstring(L, 1, &l);
                 if (l > 0) {
+                    halfword cs; 
                     lua_createtable(L, 0, onlyflags ? 0 : 5);
-                    halfword cs = tex_string_locate(str, l, 0);
+                    cs = tex_string_locate(str, l, 0);
                     cmd = eq_type(cs);
                     chr = eq_value(cs);
                     flags = eq_flag(cs);
@@ -3174,10 +3175,11 @@ static int tokenlib_set_lua(lua_State *L)
         size_t lname = 0;
         const char *name = lua_tolstring(L, 1, &lname);
         if (name) {
+            halfword cs; 
             int flags = 0;
             int funct = lmt_tointeger(L, 2); /*tex todo: check range */
             lmt_check_for_flags(L, 3, &flags, 1, 1);
-            halfword cs = tex_string_locate(name, lname, 1);
+            cs = tex_string_locate(name, lname, 1);
             if (tex_define_permitted(cs, flags)) {
                 if (is_value(flags)) {
                     tex_define(flags, cs, lua_value_cmd, funct);

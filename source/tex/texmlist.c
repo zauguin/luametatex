@@ -297,7 +297,7 @@ inline static void tex_aux_make_style(halfword current, halfword *current_style,
                 }
                 tex_aux_set_current_math_size(style);
                 if (current_mu) { 
-                    *current_mu = scaledround(tex_get_math_quad_style(style) / 18.0);
+                    *current_mu = scaledround(((double) tex_get_math_quad_style(style)) / 18.0);
                 }
             }
             break;
@@ -3173,11 +3173,11 @@ static void tex_aux_wrap_fraction_result(halfword target, int style, int size, h
         halfword left = null;
         halfword right = null;
         halfword delta = tex_get_math_y_parameter(style, math_parameter_fraction_del_size);
+        delimiterextremes extremes = { .tfont = null_font, .tchar = 0, .bfont = null_font, .bchar = 0, .height = 0, .depth = 0 };
         if (delta == undefined_math_parameter) {
             delta = tex_aux_get_delimiter_height(box_height(fraction), box_depth(fraction), 1, size, style);
         }
         /*tex Watch out: there can be empty delimiter boxes but with width. */
-        delimiterextremes extremes = { .tfont = null_font, .tchar = 0, .bfont = null_font, .bchar = 0, .height = 0, .depth = 0 };
         left = tex_aux_make_delimiter(target, left_delimiter, size, delta, 0, style, 1, NULL, NULL, 0, has_noad_option_nooverflow(target), NULL, 0);
         right = tex_aux_make_delimiter(target, right_delimiter, size, delta, 0, style, 1, NULL, NULL, 0, has_noad_option_nooverflow(target), &extremes, 0);
         if (kerns && extremes.tfont) { 
@@ -4076,11 +4076,11 @@ static halfword tex_aux_check_ord(halfword current, halfword size, halfword next
             }
         case math_char_node: 
             {
+                halfword curchr = null;
+                halfword curfnt = null;
                 if (! next) { 
                     next = node_next(current);
                 }
-                halfword curchr = null;
-                halfword curfnt = null;
                 tex_aux_fetch(nucleus, "ordinal", &curfnt, &curchr);
                 if (curfnt && curchr) {
                     halfword kern = 0;
@@ -4461,7 +4461,6 @@ static scaled tex_aux_math_kern_at(halfword fnt, int chr, int side, int value)
                     return tex_char_top_left_kern_from_font(fnt, chr);
                 case bottom_left_kern:
                     return tex_char_bottom_left_kern_from_font(fnt, chr);
-                    break;
                 case top_right_kern:
                     return tex_char_top_right_kern_from_font(fnt, chr);
                 case bottom_right_kern:
@@ -5414,7 +5413,7 @@ static halfword tex_aux_make_left_right(halfword target, int style, scaled max_d
         if (leftoperator && has_noad_option_auto(target)) {
              /*tex Todo: option for skipping this. */
              if (style < text_style) {
-                 scaled s = scaledround(tex_get_math_parameter(style, math_parameter_operator_size, NULL));
+                 scaled s = scaledround((double) tex_get_math_parameter(style, math_parameter_operator_size, NULL));
                  if (s > max_h + max_d) {
                      max_h = scaledround(s / 2.0);
                      max_d = max_h;
@@ -5725,6 +5724,7 @@ static halfword tex_aux_check_nucleus_complexity(halfword target, scaled *italic
                     halfword fnt = null;
                     if (tex_aux_fetch(nucleus, "(text) char", &fnt, &chr)) {
                         /*tex We make a math glyph from an ordinary one. */
+                        halfword glyph;
                         quarterword subtype = 0;
                         switch (node_subtype(nucleus)) {
                             case ordinary_noad_subtype:    subtype = glyph_math_ordinary_subtype;    break;
@@ -5758,7 +5758,7 @@ static halfword tex_aux_check_nucleus_complexity(halfword target, scaled *italic
                                 break;
 
                         }
-                        halfword glyph = tex_aux_new_math_glyph(fnt, chr, subtype);
+                        glyph = tex_aux_new_math_glyph(fnt, chr, subtype);
                         tex_attach_attribute_list_copy(glyph, nucleus);
                         if (node_type(nucleus) == math_char_node) {
                             glyph_properties(glyph) = kernel_math_properties(nucleus);
@@ -6072,7 +6072,7 @@ static halfword tex_aux_unroll_noad(halfword tail, halfword l, quarterword s)
     while (l) {
         halfword n = node_next(l);
         node_next(l) = null;
-        if (node_type(l) == hlist_node && (s < 0 || node_subtype(l) == s) && ! box_source_anchor(l)) {
+        if (node_type(l) == hlist_node && (node_subtype(l) == s) && ! box_source_anchor(l)) {
             if (box_list(l)) {
                 tex_couple_nodes(tail, box_list(l));
                 tail = tex_tail_of_node_list(tail);

@@ -711,8 +711,8 @@ void tex_show_save_groups(void)
       FOUND1:
         {
             /*tex Show the box packaging info. */
-            tex_print_str_esc(package);
             halfword packing, amount;
+            tex_print_str_esc(package);
             if (tex_aux_saved_box_spec(&packing, &amount)) {
                 tex_print_str(packing == packing_exactly ? " to " : " spread ");
                 tex_print_dimension(amount, pt_unit);

@@ -1975,8 +1975,8 @@ halfword tex_scan_int(int optional_equal, int *radix)
                         *radix = 8;
                     }
                     while (1) {
-                        tex_get_x_token();
                         unsigned d = 0;
+                        tex_get_x_token();
                         if ((cur_tok >= zero_token) && (cur_tok <= seven_token)) {
                             d = cur_tok - zero_token;
                         } else {
@@ -1997,7 +1997,7 @@ halfword tex_scan_int(int optional_equal, int *radix)
                             }
                         }
                     }
-                    break;
+                 // break;
                 }
             case hex_token:
                 {
@@ -2005,8 +2005,8 @@ halfword tex_scan_int(int optional_equal, int *radix)
                         *radix = 16;
                     }
                     while (1) {
-                        tex_get_x_token();
                         unsigned d = 0;
+                        tex_get_x_token();
                         if ((cur_tok >= zero_token) && (cur_tok <= nine_token)) {
                             d = cur_tok - zero_token;
                         } else if ((cur_tok >= A_token_l) && (cur_tok <= F_token_l)) {
@@ -2031,7 +2031,7 @@ halfword tex_scan_int(int optional_equal, int *radix)
                             }
                         }
                     }
-                    break;
+                 // break;
                 }
             default:
                 {
@@ -2061,7 +2061,7 @@ halfword tex_scan_int(int optional_equal, int *radix)
                         }
                         tex_get_x_token();
                     }
-                    break;
+                 // break;
                 }
         }
       DONE:
@@ -2099,8 +2099,8 @@ int tex_scan_cardinal(unsigned *value, int dontbark)
             case octal_token:
                 {
                     while (1) {
-                        tex_get_x_token();
                         unsigned d = 0;
+                        tex_get_x_token();
                         if ((cur_tok >= zero_token) && (cur_tok <= seven_token)) {
                             d = cur_tok - zero_token;
                         } else {
@@ -2112,13 +2112,13 @@ int tex_scan_cardinal(unsigned *value, int dontbark)
                             result = max_cardinal;
                         }
                     }
-                    break;
+                 // break;
                 }
             case hex_token:
                 {
                     while (1) {
-                        tex_get_x_token();
                         unsigned d = 0;
+                        tex_get_x_token();
                         if ((cur_tok >= zero_token) && (cur_tok <= nine_token)) {
                             d = cur_tok - zero_token;
                         } else if ((cur_tok >= A_token_l) && (cur_tok <= F_token_l)) {
@@ -2134,7 +2134,7 @@ int tex_scan_cardinal(unsigned *value, int dontbark)
                             result = max_cardinal;
                         }
                     }
-                    break;
+                 // break;
                 }
             default:
                 {
@@ -2152,7 +2152,7 @@ int tex_scan_cardinal(unsigned *value, int dontbark)
                         }
                         tex_get_x_token();
                     }
-                    break;
+                 // break;
                 }
         }
       DONE:
@@ -4178,7 +4178,7 @@ static void tex_aux_scan_expr(halfword level)
         node_subtype(t) = 0;
         /* */
         node_next(t) = top;
-        expression_type(t) = (quarterword) level;
+        expression_type(t) = (singleword) level;
         expression_state(t) = (singleword) state;
         expression_result(t) = (singleword) result;
         expression_expression(t) = expression;
@@ -4879,8 +4879,8 @@ static halfword tex_scan_bit_int(int *radix)
                         *radix = 8;
                     }
                     while (1) {
-                        tex_get_x_token();
                         unsigned d = 0;
+                        tex_get_x_token();
                         if ((cur_tok >= zero_token) && (cur_tok <= seven_token)) {
                             d = cur_tok - zero_token;
                         } else {
@@ -4896,7 +4896,7 @@ static halfword tex_scan_bit_int(int *radix)
                             }
                         }
                     }
-                    break;
+                 // break;
                 }
             case hex_token:
                 {
@@ -4904,8 +4904,8 @@ static halfword tex_scan_bit_int(int *radix)
                         *radix = 16;
                     }
                     while (1) {
-                        tex_get_x_token();
                         unsigned d = 0;
+                        tex_get_x_token();
                         if ((cur_tok >= zero_token) && (cur_tok <= nine_token)) {
                             d = cur_tok - zero_token;
                         } else if ((cur_tok >= A_token_l) && (cur_tok <= F_token_l)) {
@@ -4925,7 +4925,7 @@ static halfword tex_scan_bit_int(int *radix)
                             }
                         }
                     }
-                    break;
+                 // break;
                 }
             default:
                 {
@@ -4950,7 +4950,7 @@ static halfword tex_scan_bit_int(int *radix)
                         }
                         tex_get_x_token();
                     }
-                    break;
+                 // break;
                 }
         }
       DONE:
@@ -5521,7 +5521,7 @@ static void tex_aux_scan_expression(int level)
                                     break;
                                 case bit_expression_multiply:
                                     {
-                                        double d = va * vb;
+                                        double d = (double) va * (double) vb;
                                         if (sa == bit_expression_float) {
                                             d = d / (65536 * factor);
                                         } else if (sb == bit_expression_float) {
@@ -5687,7 +5687,7 @@ int tex_scan_tex_value(halfword level, halfword *value)
 quarterword tex_scan_direction(int optional_equal)
 {
     int i = tex_scan_int(optional_equal, NULL);
-    return checked_direction_value(i);
+    return (quarterword) checked_direction_value(i);
 }
 
 halfword tex_scan_geometry(int optional_equal)

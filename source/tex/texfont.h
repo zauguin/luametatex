@@ -372,6 +372,7 @@ extern scaled   tex_get_font_extra_space      (halfword f);
 extern scaled   tex_get_font_parameter        (halfword f, halfword code);
 extern void     tex_set_font_parameter        (halfword f, halfword code, scaled v);
                 
+extern scaled   tex_get_scaled_slant          (halfword f);
 extern scaled   tex_get_scaled_space          (halfword f);
 extern scaled   tex_get_scaled_space_stretch  (halfword f);
 extern scaled   tex_get_scaled_space_shrink   (halfword f);

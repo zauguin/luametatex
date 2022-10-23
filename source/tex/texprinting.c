@@ -590,10 +590,6 @@ void tex_print_hex(int sn)
     unsigned int n = (unsigned int) sn;
     int k = 0;
     unsigned char digits[24];
-    if (n < 0) {
-        tex_print_char('-');
-        n = -n; 
-    }
     do {
         unsigned char d = (unsigned char) (n % 16);
         if (d < 10) {

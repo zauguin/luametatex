@@ -243,8 +243,8 @@
 # define  mp_line_cap(A)       ((mp_shape_node) (A))->linecap
 # define  mp_line_join(A)      ((mp_shape_node) (A))->linejoin
 # define  mp_miterlimit(A)     ((mp_shape_node) (A))->miterlimit
-# define  mp_set_linecap(A,B)  ((mp_shape_node) (A))->linecap = (short) (B)
-# define  mp_set_linejoin(A,B) ((mp_shape_node) (A))->linejoin = (short) (B)
+# define  mp_set_linecap(A,B)  ((mp_shape_node) (A))->linecap = (unsigned char) (B)
+# define  mp_set_linejoin(A,B) ((mp_shape_node) (A))->linejoin = (unsigned char) (B)
 # define  mp_pre_script(A)     ((mp_shape_node) (A))->pre_script
 # define  mp_post_script(A)    ((mp_shape_node) (A))->post_script
 # define  mp_color_model(A)    ((mp_shape_node) (A))->color_model
@@ -458,13 +458,13 @@
 # define  gr_dash_ptr(A)       (A)->dash
 # define  mp_gr_export_color(q,p) \
 if (mp_color_model(p) == mp_uninitialized_model) { \
-    gr_color_model(q) = number_to_scaled(internal_value(mp_default_color_model_internal))/65536; \
+    gr_color_model(q) = (unsigned char) (number_to_scaled(internal_value(mp_default_color_model_internal))/65536); \
     gr_cyan_val(q)    = 0; \
     gr_magenta_val(q) = 0; \
     gr_yellow_val(q)  = 0; \
     gr_black_val(q)   = gr_color_model(q) == mp_cmyk_model ? (number_to_scaled(unity_t)/65536.0) : 0; \
 } else { \
-    gr_color_model(q) = mp_color_model(p); \
+    gr_color_model(q) = (unsigned char) mp_color_model(p); \
     gr_cyan_val(q)    = number_to_double(p->cyan); \
     gr_magenta_val(q) = number_to_double(p->magenta); \
     gr_yellow_val(q)  = number_to_double(p->yellow); \
@@ -9152,7 +9152,7 @@ void mp_print_dependency (MP mp, mp_value_node p, int t)
 
 static void mp_max_coef (MP mp, mp_number *x, mp_value_node p)
 {
-    mp_number(absv);
+    mp_number absv;
     new_number(absv);
     set_number_to_zero(*x);
     while (mp_get_dep_info(p) != NULL) {
@@ -10875,7 +10875,7 @@ void mp_get_next (MP mp)
                             );
                             goto RESTART;
                         }
-                        mp_str_room(mp, (size_t) (loc - k));
+                        mp_str_room(mp, loc - k);
                         do {
                             mp_append_char(mp, mp->buffer[k]);
                             ++k;

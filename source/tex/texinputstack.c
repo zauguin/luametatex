@@ -841,11 +841,12 @@ void tex_cleanup_input_state(void)
                 break;
             case macro_text:
                 {
+                    int ptr, start;
                     /*tex Using a simple version for no arguments has no gain. */
                     tex_delete_token_reference(lmt_input_state.cur_input.start);
                     /*tex Parameters must be flushed: */
-                    int ptr = lmt_input_state.parameter_stack_data.ptr;
-                    int start = lmt_input_state.cur_input.parameter_start;
+                    ptr = lmt_input_state.parameter_stack_data.ptr;
+                    start = lmt_input_state.cur_input.parameter_start;
                     while (ptr > start) {
                         --ptr;
                         if (lmt_input_state.parameter_stack[ptr]) {

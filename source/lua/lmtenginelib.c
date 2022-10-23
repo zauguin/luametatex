@@ -433,7 +433,7 @@ static void enginelib_check_option(char **options, int i)
 
 */
 
-const char *suffixes[] = { "lmt", "lua", NULL };
+static const char *suffixes[] = { "lmt", "lua", NULL };
 
 static void enginelib_parse_options(void)
 {

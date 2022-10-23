@@ -2451,7 +2451,7 @@ const char *tex_aux_subtype_str(halfword n)
 
 */
 
-void tex_print_specnode(halfword v, int unit) 
+static void tex_print_specnode(halfword v, int unit) /* for now local */
 {
     if (tracing_nodes_par > 2) {
         tex_print_format("<%i>", v);
@@ -3356,7 +3356,7 @@ scaled tex_glyph_depth(halfword p) /* not used */
 
 scaledwhd tex_glyph_dimensions(halfword p)
 {
-    scaledwhd whd = { 0, 0, 0 };
+    scaledwhd whd = { 0, 0, 0, 0 };
     scaled x = glyph_x_offset(p);
     scaled y = glyph_y_offset(p);
     whd.ht = tex_char_height_from_glyph(p) + glyph_raise(p);
@@ -3380,7 +3380,7 @@ scaledwhd tex_glyph_dimensions(halfword p)
 
 scaledwhd tex_glyph_dimensions_ex(halfword p)
 {
-    scaledwhd whd = { 0, 0, 0 };
+    scaledwhd whd = { 0, 0, 0, 0 };
     scaled x = glyph_x_offset(p);
     scaled y = glyph_y_offset(p);
     whd.ht = tex_char_height_from_glyph(p) + glyph_raise(p);
@@ -3451,7 +3451,7 @@ halfword tex_kern_dimension_ex(halfword p)
 
 scaledwhd tex_pack_dimensions(halfword p)
 {
-    scaledwhd whd = { 0, 0, 0 };
+    scaledwhd whd = { 0, 0, 0, 0 };
     whd.ht = box_height(p);
     whd.dp = box_depth(p);
     whd.wd = box_width(p);
@@ -4331,13 +4331,13 @@ void tex_check_disc_field(halfword n)
 
 void tex_set_discpart(halfword d, halfword h, halfword t, halfword code)
 {
+    halfword c = h;
     switch (node_subtype(d)) { 
         case automatic_discretionary_code:
         case mathematics_discretionary_code:
             code = glyph_discpart_always;
             break;
     }
-    halfword c = h;
     while (c) {
         if (node_type(c) == glyph_node) {
             set_glyph_discpart(c, code);

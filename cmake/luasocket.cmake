@@ -49,16 +49,21 @@ if (WIN32)
         wsock32
         ws2_32
     )
-    target_compile_definitions(luasocket PRIVATE
-        LUASOCKET_INET_PTON
-    )
 endif()
 
-# if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+# It seems to depend on the mingw installation: 
+
+# if (__MINGW64_TOOLCHAIN_)
 #     target_compile_definitions(luasocket PRIVATE
 #         LUASOCKET_INET_PTON
 #     )
 # endif()
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_definitions(luasocket PRIVATE
+        LUASOCKET_INET_PTON
+    )
+endif()
 
 
 

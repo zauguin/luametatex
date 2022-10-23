@@ -1036,7 +1036,7 @@ static void tex_aux_macro_call(halfword cs, halfword cmd, halfword chr)
                             s = null;
                             goto BAD;
                         }
-                        break;
+                     // break;
                     case thrash_match_token:
                         match = 0;
                         thrash = 1;

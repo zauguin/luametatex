@@ -4385,7 +4385,7 @@ static int texlib_setboxdir(lua_State *L)
 {
     int index = lmt_tointeger(L, 1);
     if (index >= 0 && index <= max_box_register_index) {
-        tex_set_box_dir(index, lmt_tointeger(L, 2));
+        tex_set_box_dir(index, lmt_tosingleword(L, 2));
     } else {
         texlib_aux_show_box_index_error(L);
     }
@@ -4536,8 +4536,8 @@ static int texlib_mathchardef(lua_State *L)
         if (tex_define_permitted(cs, flags)) {
             mathcodeval m;
             mathdictval d;
-            m.class_value = lmt_tointeger(L, 2);
-            m.family_value = lmt_tointeger(L, 3);
+            m.class_value = (short) lmt_tointeger(L, 2);
+            m.family_value = (short) lmt_tointeger(L, 3);
             m.character_value = lmt_tointeger(L, 4);
             d.properties = lmt_optquarterword(L, 6, 0);
             d.group = lmt_optquarterword(L, 7, 0);
