@@ -297,7 +297,7 @@ inline static void tex_aux_make_style(halfword current, halfword *current_style,
                 }
                 tex_aux_set_current_math_size(style);
                 if (current_mu) { 
-                    *current_mu = scaledround(((double) tex_get_math_quad_style(style)) / 18.0);
+                    *current_mu = scaledround((double) tex_get_math_quad_style(style) / 18.0);
                 }
             }
             break;
@@ -311,7 +311,7 @@ void tex_set_math_text_font(halfword style, int usetextfont)
      halfword scale = tex_get_math_font_scale(font, size);
      switch (usetextfont) {
          case math_atom_text_font_option:
-             scale = scaledround((double) scale * lmt_font_state.fonts[font]->size / lmt_font_state.fonts[cur_font_par]->size);
+             scale = scaledround((double) scale * (double) lmt_font_state.fonts[font]->size / (double) lmt_font_state.fonts[cur_font_par]->size);
              break;
          case math_atom_math_font_option:
              update_tex_font(0, font);
