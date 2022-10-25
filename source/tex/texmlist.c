@@ -178,7 +178,8 @@ static void tex_aux_prepend_hkern_to_box_list(halfword q, scaled delta, halfword
         \startitem
             |FlattenedAccentBaseHeight|: This is based on the |flac| |GSUB| feature. It would not
             be hard to support that, but proper math accent placements cf.\ |MATH| needs support
-            for |MathTopAccentAttachment| table to be implemented first.
+            for |MathTopAccentAttachment| table to be implemented first. We actually do support 
+            it in \LUAMETATEX. 
         \stopitem
 
     \stopitemize
@@ -2941,9 +2942,9 @@ static void tex_aux_do_make_math_accent(halfword target, halfword accentfnt, hal
     }
     if (flags & top_accent_code) {
         scaled b = tex_get_math_y_parameter(style, math_parameter_accent_base_height);
-        scaled f = tex_get_math_y_parameter(style, math_parameter_flattened_accent_base_height);
         scaled u = tex_get_math_y_parameter(style, stretch ? math_parameter_flattened_accent_top_shift_up : math_parameter_accent_top_shift_up);
-        if (! tex_aux_math_engine_control(glyph_font(accentfnt), math_control_ignore_flat_accents)) {
+        if (! tex_aux_math_engine_control(accentfnt, math_control_ignore_flat_accents)) {
+            scaled f = tex_get_math_y_parameter(style, math_parameter_flattened_accent_base_height);
             if (f != undefined_math_parameter && baseheight > f) {
                 halfword flatchr = tex_char_flat_accent_from_font(accentfnt, accentchr);
                 if (flatchr != INT_MIN && flatchr != accentchr) {

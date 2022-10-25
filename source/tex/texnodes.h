@@ -1767,10 +1767,10 @@ inline int has_noad_no_script_option(halfword n, halfword option)
     return 0;
 }
 
-# define has_noad_option_nosubscript(a)        has_noad_no_script_option(a, noad_option_no_sub_script)
-# define has_noad_option_nosupscript(a)        has_noad_no_script_option(a, noad_option_no_super_script)
-# define has_noad_option_nosubprescript(a)     has_noad_no_script_option(a, noad_option_no_sub_pre_script)
-# define has_noad_option_nosupprescript(a)     has_noad_no_script_option(a, noad_option_no_super_pre_script)
+# define has_noad_option_nosubscript(a)    has_noad_no_script_option(a, noad_option_no_sub_script)
+# define has_noad_option_nosupscript(a)    has_noad_no_script_option(a, noad_option_no_super_script)
+# define has_noad_option_nosubprescript(a) has_noad_no_script_option(a, noad_option_no_sub_pre_script)
+# define has_noad_option_nosupprescript(a) has_noad_no_script_option(a, noad_option_no_super_pre_script)
 
 # define has_noad_option_shiftedsubscript(a)    (has_option(noad_options(a), noad_option_shifted_sub_script))
 # define has_noad_option_shiftedsupscript(a)    (has_option(noad_options(a), noad_option_shifted_super_script))
@@ -2004,14 +2004,14 @@ typedef enum math_kernel_options {
     math_kernel_has_italic_shape     = 0x0080,
 } math_kernel_options;
 
-# define math_kernel_node_size 5
-# define kernel_math_family(a)        vinfo(a,2)
-# define kernel_math_character(a)     vlink(a,2)
-# define kernel_math_options(a)       vinfo(a,3)
-# define kernel_math_list(a)          vlink(a,3)
-# define kernel_math_properties(a)    vinfo0(a,4)  /* for characters */
-# define kernel_math_group(a)         vinfo1(a,4)  /* for characters */
-# define kernel_math_index(a)         vlink(a,4)   /* for characters */
+# define math_kernel_node_size     5
+# define kernel_math_family(a)     vinfo(a,2)
+# define kernel_math_character(a)  vlink(a,2)
+# define kernel_math_options(a)    vinfo(a,3)
+# define kernel_math_list(a)       vlink(a,3)
+# define kernel_math_properties(a) vinfo0(a,4)  /* for characters */
+# define kernel_math_group(a)      vinfo1(a,4)  /* for characters */
+# define kernel_math_index(a)      vlink(a,4)   /* for characters */
 
 # define math_kernel_node_has_option(a,b) ((kernel_math_options(a) & b) == b)
 # define math_kernel_node_set_option(a,b) kernel_math_options(a) = (kernel_math_options(a) | b)
@@ -2021,6 +2021,26 @@ typedef enum math_kernel_options {
     in traditional \TEX\ fonts where a base character can come from one font, and the extensible
     from another, but in \OPENTYPE\ math font that doesn't happen.
 */
+    
+/* It could be: */
+
+// # define math_delimiter_node_size     4
+// # define delimiter_small_family(a)    vinfo00(a,2)  
+// # define delimiter_large_family(a)    vinfo01(a,2)  
+// # define delimiter_reserved_1         vinfo02(a,2)  
+// # define delimiter_reserved_2         vinfo03(a,2)  
+// # define delimiter_reserved_3         vlink(a,2)  
+// # define delimiter_small_character(a) vinfo(a,3)
+// # define delimiter_large_character(a) vlink(a,3)
+
+/* And some day (we then even assume traditionally to be mapped onto wide): */
+
+// # define math_delimiter_node_size 3
+// # define delimiter_family(a)      vinfo00(a,2)  
+// # define delimiter_reserved_1     vinfo01(a,2)  
+// # define delimiter_reserved_2     vinfo02(a,2)  
+// # define delimiter_reserved_3     vinfo03(a,2)  
+// # define delimiter_character(a)   vlink(a,2)
 
 # define math_delimiter_node_size     4
 # define delimiter_small_family(a)    vinfo(a,2) /*tex |family| for small delimiter */
@@ -2538,15 +2558,20 @@ inline static void tex_attach_attribute_list_attribute(halfword target, halfword
     is used in the \LUA\ interface is stored alongside.
 */
 
-extern void     tex_print_short_node_contents (halfword n);
-extern void     tex_show_node_list            (halfword n, int threshold, int max);
-extern halfword tex_actual_box_width          (halfword r, scaled base_width);
-extern void     tex_print_name                (halfword p, const char *what);
-extern void     tex_print_node_list           (halfword n, const char *what, int threshold, int max);
-/*     void     tex_print_node_and_details    (halfword p); */
-/*     void     tex_print_subtype_and_attributes_info (halfword p, halfword s, node_info *data); */
-extern void     tex_print_extended_subtype    (halfword p, quarterword s);
-extern void     tex_aux_show_dictionary       (halfword p, halfword properties, halfword group, halfword index, halfword font, halfword character);
+extern void        tex_print_short_node_contents         (halfword n);
+extern const char *tex_aux_subtype_str                   (halfword n);
+extern void        tex_show_node_list                    (halfword n, int threshold, int max);
+extern halfword    tex_actual_box_width                  (halfword r, scaled base_width);
+extern void        tex_print_name                        (halfword p, const char *what);
+extern void        tex_print_node_list                   (halfword n, const char *what, int threshold, int max);
+/*     void        tex_print_node_and_details            (halfword p); */
+/*     void        tex_print_subtype_and_attributes_info (halfword p, halfword s, node_info *data); */
+extern void        tex_print_extended_subtype            (halfword p, quarterword s);
+extern void        tex_aux_show_dictionary               (halfword p, halfword properties, halfword group, halfword index, halfword font, halfword character);
+
+/*tex 
+    Basic node management:
+*/
 
 extern halfword tex_new_node        (quarterword i, quarterword j);
 extern void     tex_flush_node_list (halfword n);
@@ -2596,23 +2621,8 @@ typedef enum glue_signs {
 
 # define normal_glue_multiplier 0.0
 
-inline halfword tex_checked_glue_sign(halfword sign)
-{
-    if ((sign < min_glue_sign) || (sign > max_glue_sign)) {
-        return normal_glue_sign;
-    } else {
-        return sign;
-    }
-}
-
-inline halfword tex_checked_glue_order(halfword order)
-{
-    if ((order < min_glue_order) || (order > max_glue_order)) {
-        return normal_glue_order;
-    } else {
-        return order;
-    }
-}
+inline halfword tex_checked_glue_sign  (halfword sign)  { return ((sign  < min_glue_sign ) || (sign  > max_glue_sign )) ? normal_glue_sign  : sign ; }
+inline halfword tex_checked_glue_order (halfword order) { return ((order < min_glue_order) || (order > max_glue_order)) ? normal_glue_order : order; }
 
 /*tex
     These are reserved nodes that sit at the start of main memory. We could actually just allocate
@@ -2625,7 +2635,6 @@ inline halfword tex_checked_glue_order(halfword order)
 
     Changing this to real nodes makes sense but is also tricky due to initializations ... some day
     (we need to store stuff in teh states then and these are not saved!).
-
 
 */
 
@@ -2683,6 +2692,8 @@ extern scaledwhd tex_glyph_dimensions_ex  (halfword p); /* x/y scaled, expansion
 extern halfword  tex_kern_dimension       (halfword p);
 extern halfword  tex_kern_dimension_ex    (halfword p); /* expansion included */
 
+extern scaled    tex_effective_glue       (halfword parent, halfword glue);
+
 extern scaledwhd tex_pack_dimensions      (halfword p);
 
 extern halfword  tex_list_node_mem_usage  (void);
@@ -2723,13 +2734,9 @@ typedef enum special_node_list_types { /* not in sycn with the above .. maybe ad
  // best_page_break_type
 } special_node_list_types;
 
-extern int         tex_is_special_node_list  (halfword n, int *istail);
-extern halfword    tex_get_special_node_list (special_node_list_types list, halfword *tail);
-extern void        tex_set_special_node_list (special_node_list_types list, halfword head);
-
-extern scaled      tex_effective_glue        (halfword parent, halfword glue);
-
-extern const char *tex_aux_subtype_str       (halfword n );
+extern int      tex_is_special_node_list  (halfword n, int *istail);
+extern halfword tex_get_special_node_list (special_node_list_types list, halfword *tail);
+extern void     tex_set_special_node_list (special_node_list_types list, halfword head);
 
 # endif
 

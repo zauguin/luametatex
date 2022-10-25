@@ -349,16 +349,19 @@ static void tex_aux_show_if_state(halfword code, halfword case_value)
 {
     tex_begin_diagnostic();
     switch (code) {
-        case if_chk_int_code   : tex_print_format("{chknum %i}",    case_value); break;
-        case if_val_int_code   : tex_print_format("{numval %i}",    case_value); break;
-        case if_cmp_int_code   : tex_print_format("{cmpnum %i}",    case_value); break;
-        case if_chk_dim_code   : tex_print_format("{chkdim %i}",    case_value); break;
-        case if_val_dim_code   : tex_print_format("{dimval %i}",    case_value); break;
-        case if_cmp_dim_code   : tex_print_format("{cmpdim %i}",    case_value); break;
-        case if_case_code      : tex_print_format("{case %i}",      case_value); break;
-        case if_math_style_code: tex_print_format("{mathstyle %i}", case_value); break;
-        case if_arguments_code : tex_print_format("{arguments %i}", case_value); break;
-        default                : tex_print_format("{todo %i}",      case_value); break;
+        case if_chk_int_code       : tex_print_format("{chknum %i}",        case_value); break;
+        case if_val_int_code       : tex_print_format("{numval %i}",        case_value); break;
+        case if_cmp_int_code       : tex_print_format("{cmpnum %i}",        case_value); break;
+        case if_chk_dim_code       : tex_print_format("{chkdim %i}",        case_value); break;
+        case if_val_dim_code       : tex_print_format("{dimval %i}",        case_value); break;
+        case if_cmp_dim_code       : tex_print_format("{cmpdim %i}",        case_value); break;
+        case if_case_code          : tex_print_format("{case %i}",          case_value); break;
+        case if_math_parameter_code: tex_print_format("{mathparameter %i}", case_value); break;
+        case if_math_style_code    : tex_print_format("{mathstyle %i}",     case_value); break;
+        case if_arguments_code     : tex_print_format("{arguments %i}",     case_value); break;
+        case if_parameters_code    : tex_print_format("{parameter %i}",     case_value); break;
+        case if_parameter_code     : tex_print_format("{parameters %i}",    case_value); break;
+        default                    : tex_print_format("{todo %i}",          case_value); break;
     }
     tex_end_diagnostic();
 }
