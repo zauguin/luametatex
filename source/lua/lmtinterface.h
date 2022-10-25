@@ -1605,7 +1605,6 @@ extern lmt_keys_info lmt_keys;
 # define lmt_rounded(d)            (lua_Integer) (llround(d))
 # define lmt_roundedfloat(f)       (lua_Integer) (llround((double) f))
 
-
 # define lmt_tolong(L,i)           (long)        lua_tointeger(L,i)
 # define lmt_checklong(L,i)        (long)        luaL_checkinteger(L,i)
 # define lmt_optlong(L,i,j)        (long)        luaL_optinteger(L,i,j)

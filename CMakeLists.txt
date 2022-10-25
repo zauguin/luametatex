@@ -177,6 +177,10 @@ if (CMAKE_C_COMPILER_ID STREQUAL "Clang")
         -Wno-missing-noreturn
         -Wno-implicit-fallthrough
       # -Wno-format
+        -Wno-reserved-identifier
+        -Wno-date-time
+        -Wno-format-nonliteral
+        -Wno-float-equal
     )
 
 endif()
