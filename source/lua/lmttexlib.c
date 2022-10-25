@@ -5139,7 +5139,7 @@ static int texlib_getdiscstatevalues(lua_State *L)
 
 static int texlib_getmathcontrolvalues(lua_State *L)
 {
-    lua_createtable(L, 2, 21);
+    lua_createtable(L, 2, 23);
     lua_set_string_by_index(L, math_control_use_font_control,            "usefontcontrol");
     lua_set_string_by_index(L, math_control_over_rule,                   "overrule");
     lua_set_string_by_index(L, math_control_under_rule,                  "underrule");
@@ -5163,6 +5163,8 @@ static int texlib_getmathcontrolvalues(lua_State *L)
     lua_set_string_by_index(L, math_control_analyze_script_nucleus_box,  "analyzescriptnucleusbox");
     lua_set_string_by_index(L, math_control_accent_top_skew_with_offset, "accenttopskewwithoffset");
     lua_set_string_by_index(L, math_control_ignore_kern_dimensions,      "ignorekerndimensions");
+    lua_set_string_by_index(L, math_control_ignore_flat_accents,         "ignoreflataccents");
+    lua_set_string_by_index(L, math_control_extend_accents,              "extendaccents");
     return 1;
 }
 

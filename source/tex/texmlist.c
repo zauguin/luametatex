@@ -858,7 +858,7 @@ static halfword tex_aux_char_box(halfword fnt, int chr, halfword att, scaled *ic
     } else if (ic) {
         *ic = 0;
     }
-    if (target && whd.wd < target && tex_char_has_tag_from_font(fnt, chr, extend_last_tag)) {
+    if (target && whd.wd < target && tex_aux_math_engine_control(fnt, math_control_extend_accents) && tex_char_has_tag_from_font(fnt, chr, extend_last_tag)) {
         scaled margin = tex_get_math_x_parameter_default(style, math_parameter_accent_extend_margin, 0);
         scaled amount = target - 2 * margin;
         glyph_x_scale(glyph) = lround((double) glyph_x_scale(glyph) * amount/whd.wd);
@@ -2943,17 +2943,19 @@ static void tex_aux_do_make_math_accent(halfword target, halfword accentfnt, hal
         scaled b = tex_get_math_y_parameter(style, math_parameter_accent_base_height);
         scaled f = tex_get_math_y_parameter(style, math_parameter_flattened_accent_base_height);
         scaled u = tex_get_math_y_parameter(style, stretch ? math_parameter_flattened_accent_top_shift_up : math_parameter_accent_top_shift_up);
-        if (f != undefined_math_parameter && baseheight > f) {
-            halfword flatchr = tex_char_flat_accent_from_font(accentfnt, accentchr);
-            if (flatchr != INT_MIN && flatchr != accentchr) {
-                tex_flush_node(accent);
-                accent = tex_aux_char_box(accentfnt, flatchr, attrlist, NULL, glyph_math_accent_subtype, usedwidth, style);
-                if (tracing_math_par >= 2) {
-                    tex_begin_diagnostic();
-                    tex_print_format("[math: flattening accent, old %x, new %x]", accentchr, flatchr);
-                    tex_end_diagnostic();
+        if (! tex_aux_math_engine_control(glyph_font(accentfnt), math_control_ignore_flat_accents)) {
+            if (f != undefined_math_parameter && baseheight > f) {
+                halfword flatchr = tex_char_flat_accent_from_font(accentfnt, accentchr);
+                if (flatchr != INT_MIN && flatchr != accentchr) {
+                    tex_flush_node(accent);
+                    accent = tex_aux_char_box(accentfnt, flatchr, attrlist, NULL, glyph_math_accent_subtype, usedwidth, style);
+                    if (tracing_math_par >= 2) {
+                        tex_begin_diagnostic();
+                        tex_print_format("[math: flattening accent, old %x, new %x]", accentchr, flatchr);
+                        tex_end_diagnostic();
+                    }
+                    accentchr = flatchr;
                 }
-                accentchr = flatchr;
             }
         }
         if (b != undefined_math_parameter) {
