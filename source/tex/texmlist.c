@@ -189,10 +189,10 @@ static void tex_aux_prepend_hkern_to_box_list(halfword q, scaled delta, halfword
 
     Occasionally I visit this file and make some variables more verbose.
 
-    In the meantime some experimental and in the meantime obsolete code has been removed but it can 
-    be found in the development repository if really needed. It makes no sense to keep code around 
-    that has been replaced or improved otherwise. Some code we keep commented for a while before it 
-    is flushed out. 
+    In the meantime some experimental and obsolete code has been removed but it can be found in 
+    the development repository if really needed. It makes no sense to keep code around that has 
+    been replaced or improved otherwise. Some code we keep commented for a while before it is 
+    flushed out. 
 
 */
 
@@ -2937,9 +2937,6 @@ static void tex_aux_do_make_math_accent(halfword target, halfword accentfnt, hal
         /*tex Italic gets added to width for traditional fonts (no italic anyway): */
         accent = tex_aux_char_box(accentfnt, accentchr, attrlist, NULL, glyph_math_accent_subtype, basewidth, style); // usedwidth 
     }
-    if (accenttotal) {
-        *accenttotal = box_total(accent);
-    }
     if (flags & top_accent_code) {
         scaled b = tex_get_math_y_parameter(style, math_parameter_accent_base_height);
         scaled u = tex_get_math_y_parameter(style, stretch ? math_parameter_flattened_accent_top_shift_up : math_parameter_accent_top_shift_up);
@@ -2980,6 +2977,9 @@ static void tex_aux_do_make_math_accent(halfword target, halfword accentfnt, hal
     } else { /* if (flags & overlay_accent_code) { */
         /*tex Center the accent vertically around base: */
         delta = tex_half_scaled(box_total(accent) + box_total(base));
+    }
+    if (accenttotal) {
+        *accenttotal = box_total(accent);
     }
     if (node_type(nucleus) != math_char_node) {
         /*tex We have a molecule, not a simple atom. */
