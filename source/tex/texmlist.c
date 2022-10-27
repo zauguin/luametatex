@@ -2326,6 +2326,8 @@ static void tex_aux_make_root_radical(halfword target, int style, int size, kern
     halfword companion = leftdelimiter ? rightdelimiter : null;
     halfword radical = null;
     delimiterextremes extremes = { .tfont = null_font, .tchar = 0, .bfont = null_font, .bchar = 0, .height = 0, .depth = 0 };
+    scaled innerx = INT_MIN;
+    scaled innery = INT_MIN;
     noad_new_hlist(target) = null;
     /*tex
         We can take the rule width from the fam/style of the delimiter or use the most recent math
@@ -2344,6 +2346,15 @@ static void tex_aux_make_root_radical(halfword target, int style, int size, kern
             theta = tex_get_math_y_parameter_checked(style, math_parameter_fraction_rule); /* a bit weird this one */
         }
         delimiter = tex_aux_make_delimiter(target, delimiter, size, box_total(nucleus) + clearance + theta, 0, style, 1, NULL, NULL, 0, has_noad_option_nooverflow(target), &extremes, 0);
+        if (radical_degree(target)) { 
+            if (tex_char_inner_location_from_font(extremes.bfont, extremes.bchar) == inner_location_left) { 
+                innerx = tex_char_inner_x_offset_from_font(extremes.bfont, extremes.bchar);
+                innery = tex_char_inner_y_offset_from_font(extremes.bfont, extremes.bchar);
+            } else if (tex_char_inner_location_from_font(extremes.tfont, extremes.tchar) == inner_location_left) { 
+                innerx = tex_char_inner_x_offset_from_font(extremes.tfont, extremes.tchar);
+                innery = tex_char_inner_y_offset_from_font(extremes.tfont, extremes.tchar);
+            }
+        }
         if (companion) {
             /*tex For now we assume symmetry and same height and depth! */
             companion = tex_aux_make_delimiter(target, companion, size, box_total(nucleus) + clearance + theta, 0, style, 1, NULL, NULL, 0, has_noad_option_nooverflow(target), &extremes, 0);
@@ -2408,6 +2419,10 @@ static void tex_aux_make_root_radical(halfword target, int style, int size, kern
                 scaled before = tex_get_math_x_parameter_checked(style, math_parameter_radical_degree_before);
                 scaled after = tex_get_math_x_parameter_checked(style, math_parameter_radical_degree_after);
                 scaled raise = tex_get_math_parameter_checked(style, math_parameter_radical_degree_raise);
+                if (innerx != INT_MIN) { 
+                    tex_aux_append_hkern_to_box_list(degree, innerx, horizontal_math_kern_subtype, "bad degree");
+                    width += innerx;
+                }
                 if (-after > width) {
                     before += -after - width;
                 }
@@ -2419,7 +2434,11 @@ static void tex_aux_make_root_radical(halfword target, int style, int size, kern
                 } else {
                     nucleus = radical;
                 }
-                box_shift_amount(degree) = - (tex_xn_over_d(total, raise, 100) - box_depth(radical) - box_shift_amount(radical));
+                if (innery != INT_MIN) { 
+                    box_shift_amount(degree) = - innery + box_depth(radical) + box_shift_amount(radical);
+                } else {
+                    box_shift_amount(degree) = - (tex_xn_over_d(total, raise, 100) - box_depth(radical) - box_shift_amount(radical));
+                }
                 tex_couple_nodes(degree, nucleus);
                 if (before) {
                     halfword kern = tex_new_kern_node(before, horizontal_math_kern_subtype);

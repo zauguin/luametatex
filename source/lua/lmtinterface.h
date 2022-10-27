@@ -757,6 +757,9 @@ make_lua_key(L, index);\
 make_lua_key(L, Info);\
 make_lua_key(L, info);\
 make_lua_key(L, inner);\
+make_lua_key(L, innerlocation);\
+make_lua_key(L, innerxoffset);\
+make_lua_key(L, inneryoffset);\
 make_lua_key(L, innerbinspacing);\
 make_lua_key(L, innerclosespacing);\
 make_lua_key(L, innerfracspacing);\

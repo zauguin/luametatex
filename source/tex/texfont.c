@@ -1867,6 +1867,24 @@ scaled tex_char_bottom_overshoot_from_font(halfword f, halfword c)
     return ci->math ? ci->math->bottom_overshoot : 0;
 }
 
+int tex_char_inner_location_from_font(halfword f, halfword c)
+{
+    charinfo *ci = tex_aux_char_info(f, c);
+    return ci->math ? ci->math->inner_location : inner_location_none;
+}
+
+scaled tex_char_inner_x_offset_from_font(halfword f, halfword c)
+{
+    charinfo *ci = tex_aux_char_info(f, c);
+    return ci->math ? ci->math->inner_x_offset : 0;
+}
+
+scaled tex_char_inner_y_offset_from_font(halfword f, halfword c)
+{
+    charinfo *ci = tex_aux_char_info(f, c);
+    return ci->math ? ci->math->inner_y_offset : 0;
+}
+
 /* Nodes */
 
 scaled tex_char_width_from_glyph(halfword g)

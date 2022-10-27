@@ -304,8 +304,19 @@ static void fontlib_aux_font_char_from_lua(lua_State *L, halfword f, int i, int 
             set_charinfo_top_anchor(co, target);
             set_numeric_field_by_index(target, bottomanchor, INT_MIN);
             set_charinfo_bottom_anchor(co, target);
+            /* */
+            set_numeric_field_by_index(target, innerlocation, INT_MIN);
+            if (target) { 
+                set_charinfo_inner_location(co, target);
+                set_numeric_field_by_index(target, innerxoffset, INT_MIN);
+                set_charinfo_inner_x_offset(co, target);
+                set_numeric_field_by_index(target, inneryoffset, INT_MIN);
+                set_charinfo_inner_y_offset(co, target);
+            }
+            /* */
             set_numeric_field_by_index(target, flataccent, INT_MIN);
             set_charinfo_flat_accent(co, target);
+            /* */
             set_numeric_field_by_index(target, next, -1);
             if (target >= 0) {
                 set_charinfo_tag(co, list_tag);

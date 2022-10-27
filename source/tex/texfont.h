@@ -78,6 +78,12 @@ typedef struct extinfo {
 //
 // # define math_font_option(options,option) ((options & option) == option)
 
+typedef enum inner_anchor_location_codes {
+    inner_location_none,
+    inner_location_left,
+    inner_location_right,
+} inner_anchor_location_codes;
+
 typedef struct mathinfo {
     scaled    vertical_italic;
     scaled    top_anchor;              /* provided by the font, aka topaccent */
@@ -107,7 +113,10 @@ typedef struct mathinfo {
     scaled   top_overshoot;
     scaled   bottom_overshoot;
     int      mirror;
-    int      padding;
+    /* these are for radical degrees (an experiment) */
+    int      inner_location; 
+    scaled   inner_x_offset;
+    scaled   inner_y_offset;
 } mathinfo;
 
 typedef struct charinfo {
@@ -464,6 +473,10 @@ extern int       tex_get_math_char    (halfword f, int c, int size, scaled *scal
 # define set_charinfo_bottom_anchor(ci,val)                if (ci->math) { ci->math->bottom_anchor = val; }
 # define set_charinfo_flat_accent(ci,val)                  if (ci->math) { ci->math->flat_accent = val; }
 
+# define set_charinfo_inner_location(ci,val)               if (ci->math) { ci->math->inner_location = val; }
+# define set_charinfo_inner_x_offset(ci,val)               if (ci->math) { ci->math->inner_x_offset = val; }
+# define set_charinfo_inner_y_offset(ci,val)               if (ci->math) { ci->math->inner_y_offset = val; }
+
 # define set_charinfo_top_left_kern(ci,val)                if (ci->math) { ci->math->top_left_kern = val; }
 # define set_charinfo_top_right_kern(ci,val)               if (ci->math) { ci->math->top_right_kern = val; }
 # define set_charinfo_bottom_left_kern(ci,val)             if (ci->math) { ci->math->bottom_left_kern = val; }
@@ -531,6 +544,10 @@ extern scaled    tex_char_italic_from_glyph             (halfword g); /* x/y sca
 extern scaled    tex_char_width_italic_from_glyph       (halfword g); /* x/y scaled */
 //     int       tex_char_has_option_from_glyph         (halfword g, int option);
 
+extern int       tex_char_inner_location_from_font      (halfword f, halfword c);
+extern scaled    tex_char_inner_x_offset_from_font      (halfword f, halfword c);
+extern scaled    tex_char_inner_y_offset_from_font      (halfword f, halfword c);
+
 extern scaledwhd tex_char_whd_from_glyph                (halfword g); /* x/y scaled */
 
 extern halfword  tex_char_unchecked_top_anchor_from_font    (halfword f, halfword c);
@@ -548,6 +565,10 @@ extern scaled    tex_char_bottom_margin_from_font       (halfword f, halfword c)
 
 extern scaled    tex_char_top_overshoot_from_font       (halfword f, halfword c);
 extern scaled    tex_char_bottom_overshoot_from_font    (halfword f, halfword c);
+
+extern int       tex_char_inner_location_from_font      (halfword f, halfword c);
+extern scaled    tex_char_inner_x_offset_from_font      (halfword f, halfword c);
+extern scaled    tex_char_inner_y_offset_from_font      (halfword f, halfword c);
 
 extern extinfo  *tex_char_vertical_parts_from_font      (halfword f, halfword c);
 extern extinfo  *tex_char_horizontal_parts_from_font    (halfword f, halfword c);

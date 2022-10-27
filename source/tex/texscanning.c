@@ -2304,6 +2304,7 @@ typedef enum scanned_unit {
 
 static int tex_aux_scan_unit(halfword *num, halfword *denom, halfword *value, halfword *order)
 {
+  AGAIN: /* only for true */
     do {
         tex_get_x_token();
     } while (cur_cmd == spacer_cmd);
@@ -2327,7 +2328,6 @@ static int tex_aux_scan_unit(halfword *num, halfword *denom, halfword *value, ha
             goto BACK_TWO;
         }
         cur_cs = save_cur_cs;
-      AGAIN:
         switch (chrone) {
             case 'p': case 'P':
                 switch (chrtwo) {
@@ -2405,7 +2405,7 @@ static int tex_aux_scan_unit(halfword *num, halfword *denom, halfword *value, ha
                     switch (chrtwo) {
                         case 'r': case 'R':
                             if (tex_scan_mandate_keyword("true", 2)) {
-                                /*tex This is now a bogus prefix! */
+                                /*tex This is now a bogus prefix that might get dropped! */
                                 goto AGAIN;
                             }
                     }
