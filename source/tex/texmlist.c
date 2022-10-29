@@ -5380,21 +5380,21 @@ static void tex_aux_make_scripts(halfword target, halfword kernel, scaled italic
 
 */
 
-static inline int tex_aux_is_extensible(halfword result)
-{
-    if (result) {
-        switch (node_type(result)) { 
-            case hlist_node:
-            case vlist_node:
-                switch (node_subtype(result)) { 
-                    case math_h_delimiter_list:
-                    case math_v_delimiter_list:
-                        return 1;
-                }
-        }
-    }
-    return 0;
-}
+// static inline int tex_aux_is_extensible(halfword result)
+// {
+//     if (result) {
+//         switch (node_type(result)) { 
+//             case hlist_node:
+//             case vlist_node:
+//                 switch (node_subtype(result)) { 
+//                     case math_h_delimiter_list:
+//                     case math_v_delimiter_list:
+//                         return 1;
+//                 }
+//         }
+//     }
+//     return 0;
+// }
 
 static halfword tex_aux_make_left_right(halfword target, int style, scaled max_d, scaled max_h, int size, delimiterextremes *extremes)
 {
@@ -5425,6 +5425,15 @@ static halfword tex_aux_make_left_right(halfword target, int style, scaled max_d
         /*tex
             Beware, a stacked delimiter has a shift but no corrected height/depth (yet).
         */
+/* or do we need has_noad_option_check(target) */
+if (! stack && has_noad_option_exact(target)) {
+    if (extremes && extremes->height < height) {
+        height = extremes->height;
+    }
+    if (extremes && extremes->depth < depth) {
+        depth = extremes->depth;
+    }
+}
         if (stack) {
             box_shift_amount(tmp) = depth;
         }
@@ -5433,7 +5442,8 @@ static halfword tex_aux_make_left_right(halfword target, int style, scaled max_d
             depth = box_depth(tmp) + box_shift_amount(tmp);
         }
         if (has_noad_option_axis(target)) {
-            if (has_noad_option_noaxis(target) && tex_aux_is_extensible(tmp)) {
+         // if (has_noad_option_noaxis(target) && tex_aux_is_extensible(tmp)) {
+            if (has_noad_option_noaxis(target) && stack) {
                 /*tex A sort of special case: see sized integrals in ctx examples. */
             } else { 
                 halfword axis = tex_aux_math_axis(size);
