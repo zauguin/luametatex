@@ -274,6 +274,8 @@ static void fontlib_aux_font_char_from_lua(lua_State *L, halfword f, int i, int 
             set_charinfo_smaller(co, target);
             set_numeric_field_by_index(target, mirror, 0);
             set_charinfo_mirror(co, target);
+            set_numeric_field_by_index(target, hitalic, 0);
+            set_charinfo_horizontal_italic(co, target);
             set_numeric_field_by_index(target, vitalic, 0);
             set_charinfo_vertical_italic(co, target);
             /* */
@@ -322,6 +324,10 @@ static void fontlib_aux_font_char_from_lua(lua_State *L, halfword f, int i, int 
                 set_charinfo_tag(co, list_tag);
                 set_charinfo_remainder(co, target);
             }
+            /* 
+                This is a tfm extensible. We anyway delegate this to Lua. We can abuse it as 
+                alternative recipe but only vertical. Anyway, consider this obsolete. 
+            */
             lua_push_key(extensible);
             switch (lua_rawget(L, -2)) { 
                 case LUA_TTABLE:

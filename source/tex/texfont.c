@@ -1743,7 +1743,6 @@ halfword tex_char_has_tag_from_font(halfword f, halfword c, halfword tag)
 void tex_char_reset_tag_from_font(halfword f, halfword c, halfword tag)
 {
     charinfo *ci = tex_aux_char_info(f, c);
- // tag = charinfo_tag(ci->tagrem) & ~(tag | charinfo_tag(ci->tagrem));
     tag = charinfo_tag(ci->tagrem) & ~(tag);
     ci->tagrem = charinfo_tagrem(tag,charinfo_rem(ci->tagrem));
     
@@ -1757,6 +1756,12 @@ halfword tex_char_tag_from_font(halfword f, halfword c)
 halfword tex_char_remainder_from_font(halfword f, halfword c)
 {
     return charinfo_rem(tex_aux_char_info(f, c)->tagrem);
+}
+
+halfword tex_char_horizontal_italic_from_font(halfword f, halfword c)
+{
+    charinfo *ci = tex_aux_char_info(f, c);
+    return ci->math ? ci->math->horizontal_italic : INT_MIN;
 }
 
 halfword tex_char_vertical_italic_from_font(halfword f, halfword c)

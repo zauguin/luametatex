@@ -1476,6 +1476,7 @@ static halfword tex_aux_make_delimiter(halfword target, halfword delimiter, int 
             scaled minoverlap = flat ? tex_get_math_x_parameter_default(style, math_parameter_connector_overlap_min, 0) : tex_get_math_y_parameter_default(style, math_parameter_connector_overlap_min, 0);;
             result = tex_aux_get_delimiter_box(fnt, chr, targetsize, minoverlap, flat, att);
             if (delta) {
+                /*tex Not yet done: horizontal italics. */
                 if (tex_aux_math_engine_control(fnt, math_control_apply_vertical_italic_kern)) {
                     *delta = tex_aux_math_x_size_scaled(fnt, tex_char_vertical_italic_from_font(fnt, nxtchr), size);
                 } else {
@@ -5379,6 +5380,22 @@ static void tex_aux_make_scripts(halfword target, halfword kernel, scaled italic
 
 */
 
+static inline int tex_aux_is_extensible(halfword result)
+{
+    if (result) {
+        switch (node_type(result)) { 
+            case hlist_node:
+            case vlist_node:
+                switch (node_subtype(result)) { 
+                    case math_h_delimiter_list:
+                    case math_v_delimiter_list:
+                        return 1;
+                }
+        }
+    }
+    return 0;
+}
+
 static halfword tex_aux_make_left_right(halfword target, int style, scaled max_d, scaled max_h, int size, delimiterextremes *extremes)
 {
     halfword tmp;
@@ -5416,10 +5433,14 @@ static halfword tex_aux_make_left_right(halfword target, int style, scaled max_d
             depth = box_depth(tmp) + box_shift_amount(tmp);
         }
         if (has_noad_option_axis(target)) {
-            halfword axis = tex_aux_math_axis(size);
-            height += axis;
-            depth -= axis;
-            box_shift_amount(tmp) -= axis;
+            if (has_noad_option_noaxis(target) && tex_aux_is_extensible(tmp)) {
+                /*tex A sort of special case: see sized integrals in ctx examples. */
+            } else { 
+                halfword axis = tex_aux_math_axis(size);
+                height += axis;
+                depth -= axis;
+                box_shift_amount(tmp) -= axis;
+            }
         }
         lst = tex_new_node(hlist_node, 0);
         tex_attach_attribute_list_copy(lst, target);
