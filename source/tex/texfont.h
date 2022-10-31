@@ -165,8 +165,12 @@ typedef struct charinfo {
         extensions in traditional \TEX\ fonts, so we just keep them. We pack the tag and remainder
         in an integer: 2 bits is enough for the tag (but we get some more) and the remainder (aka 
         next) fits in 21 bits.
+
+        When we need more bits I will make a 32 bit tag field here and move the next field to the
+        math blob (currently we would have an extra padding field there). We could consider a 
+        prev pointer but that only makes sense if we have unique sequences.
     */
-    halfword      tagrem; 
+    halfword      tagrem; /* rem == next */
     /*tex
         Traditional \TEX\ fonts use these two lists for ligature building and inter-character
         kerning and these are now optional (via pointers). By also using an indirect structure for
