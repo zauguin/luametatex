@@ -859,11 +859,13 @@ static halfword tex_aux_char_box(halfword fnt, int chr, halfword att, scaled *ic
     } else if (ic) {
         *ic = 0;
     }
-    if (target && whd.wd < target && tex_aux_math_engine_control(fnt, math_control_extend_accents) && tex_char_has_tag_from_font(fnt, chr, extend_last_tag)) {
+    if (target && whd.wd > 0 && whd.wd < target && tex_aux_math_engine_control(fnt, math_control_extend_accents) && tex_char_has_tag_from_font(fnt, chr, extend_last_tag)) {
         scaled margin = tex_get_math_x_parameter_default(style, math_parameter_accent_extend_margin, 0);
         scaled amount = target - 2 * margin;
-        glyph_x_scale(glyph) = lround((double) glyph_x_scale(glyph) * amount/whd.wd);
-        glyph_x_offset(glyph) = (whd.wd - amount)/2;
+        if (amount > 0) { 
+            glyph_x_scale(glyph) = lround((double) glyph_x_scale(glyph) * amount/whd.wd);
+            glyph_x_offset(glyph) = (whd.wd - amount)/2;
+        }
     }
     return box;
 }
