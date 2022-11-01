@@ -1124,6 +1124,12 @@ static void tex_aux_display_fence_noad(halfword n, int threshold, int max)
     if (noad_depth(n)) {
         tex_print_format(", depth %D", noad_depth(n), pt_unit);
     }
+    if (fence_top_overshoot(n)) {
+        tex_print_format(", top %D", fence_top_overshoot(n), pt_unit);
+    }
+    if (fence_bottom_overshoot(n)) {
+        tex_print_format(", top %D", fence_bottom_overshoot(n), pt_unit);
+    }
     if (get_noad_main_class(n) != unset_noad_class) {
         tex_print_format(", class %i", get_noad_main_class(n));
     }
@@ -3710,8 +3716,10 @@ void tex_finish_math_group(void)
 
 void tex_run_math_fence(void)
 {
-    halfword ht = 0;
-    halfword dp = 0;
+    scaled ht = 0;
+    scaled dp = 0;
+    scaled top = 0;
+    scaled bottom = 0;
     halfword options = 0;
     halfword mainclass = unset_noad_class;
     halfword leftclass = unset_noad_class;
@@ -3741,19 +3749,9 @@ void tex_run_math_fence(void)
     }
     while (1) {
            /* todo: break down  */
-        switch (tex_scan_character("hdanlevpcrsuHDANLEVPCRSU", 0, 1, 0)) {
+        switch (tex_scan_character("hdanlevpcrsutbHDANLEVPCRSUTB", 0, 1, 0)) {
             case 0:
                 goto CHECK_PAIRING;
-            case 'h': case 'H':
-                if (tex_scan_mandate_keyword("height", 1)) {
-                    ht = tex_scan_dimen(0, 0, 0, 0, NULL);
-                }
-                break;
-            case 'd': case 'D':
-                if (tex_scan_mandate_keyword("depth", 1)) {
-                    dp = tex_scan_dimen(0, 0, 0, 0, NULL);
-                }
-                break;
             case 'a': case 'A':
                 switch (tex_scan_character("uxtUXT", 0, 0, 0)) {
                     case 'u': case 'U':
@@ -3774,6 +3772,21 @@ void tex_run_math_fence(void)
                     default:
                         tex_aux_show_keyword_error("auto|attr|axis");
                         goto CHECK_PAIRING;
+                }
+                break;
+            case 'b': case 'B':
+                if (tex_scan_mandate_keyword("bottom", 1)) {
+                    bottom = tex_scan_dimen(0, 0, 0, 0, NULL);
+                }
+                break;
+            case 'd': case 'D':
+                if (tex_scan_mandate_keyword("depth", 1)) {
+                    dp = tex_scan_dimen(0, 0, 0, 0, NULL);
+                }
+                break;
+            case 'h': case 'H':
+                if (tex_scan_mandate_keyword("height", 1)) {
+                    ht = tex_scan_dimen(0, 0, 0, 0, NULL);
                 }
                 break;
             case 'n': case 'N':
@@ -3866,6 +3879,11 @@ void tex_run_math_fence(void)
                     source = tex_scan_int(0, NULL);
                 }
                 break;
+            case 't': case 'T':
+                if (tex_scan_mandate_keyword("top", 1)) {
+                    top = tex_scan_dimen(0, 0, 0, 0, NULL);
+                }
+                break;
             default:
                 goto CHECK_PAIRING;
         }
@@ -3933,6 +3951,9 @@ void tex_run_math_fence(void)
         }
         noad_italic(fence) = 0;
         noad_source(fence) = source;
+        /* */
+        fence_top_overshoot(fence) = top;
+        fence_bottom_overshoot(fence) = bottom;
         /*tex
             By setting this here, we can get rid of the hard coded values in |mlist_to_hlist| which
             sort of interfere (or at least confuse) things there. When set, the |leftclass| and

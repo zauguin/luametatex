@@ -9250,9 +9250,9 @@ chooses one of them.
 static void mp_find_offset (MP mp, mp_number *x_orig, mp_number *y_orig, mp_knot h)
 {
     if (mp_pen_is_elliptical(h)) {
-        mp_fraction xx, yy;       /* untransformed offset for an elliptical pen */
+        mp_number xx, yy;         /* untransformed offset for an elliptical pen */
         mp_number wx, wy, hx, hy; /* the transformation matrix for an elliptical pen */
-        mp_fraction d;            /* a temporary register */
+        mp_number d;              /* a temporary register */
         new_fraction(xx);
         new_fraction(yy);
         new_number(wx);
@@ -9438,9 +9438,6 @@ static void mp_pen_bbox (MP mp, mp_knot h)
 This first set goes into the header
 
 @<MPlib internal header stuff@>=
-@d mp_fraction mp_number
-@d mp_angle    mp_number
-
 @d new_number(A)                           mp->math->md_allocate(mp, &(A), mp_scaled_type)
 @d new_fraction(A)                         mp->math->md_allocate(mp, &(A), mp_fraction_type)
 @d new_angle(A)                            mp->math->md_allocate(mp, &(A), mp_angle_type)
@@ -11025,7 +11022,7 @@ to be stroked with the pen~|pp|.
 static void mp_box_ends (MP mp, mp_knot p, mp_knot pp, mp_edge_header_node h)
 {
     if (mp_right_type(p) != mp_endpoint_knot) {
-        mp_fraction dx, dy; /* a unit vector in the direction out of the path at~|p| */
+        mp_number dx, dy;   /* a unit vector in the direction out of the path at~|p| */
         mp_number d;        /* a factor for adjusting the length of |(dx,dy)| */
         mp_number z;        /* a coordinate being tested against the bounding box */
         mp_number xx, yy;   /* the extreme pen vertex in the |(dx,dy)| direction */
@@ -12387,7 +12384,7 @@ static mp_knot mp_make_envelope (MP mp, mp_knot c, mp_knot h, int linejoin, int 
     mp_knot w, w0;       /* the pen knot for the current offset */
     int k, k0;           /* controls pen edge insertion */
     mp_number qx, qy;    /* unshifted coordinates of |q| */
-    mp_fraction dxin, dyin, dxout, dyout; /* directions at |q| when square or mitered */
+    mp_number dxin, dyin, dxout, dyout; /* directions at |q| when square or mitered */
     int join_type = 0;   /* codes |0..3| for mitered, round, beveled, or square */
     @<Other local variables for |make_envelope|@>
     new_number(max_ht);
@@ -23914,13 +23911,13 @@ static void mp_bezier_slope (MP mp,
 static void mp_turn_cycles (MP mp, mp_number *turns, mp_knot c)
 {
     int selector;                 /* saved |selector| setting */
-    mp_angle res, ang;            /* the angles of intermediate results */
+    mp_number res, ang;            /* the angles of intermediate results */
     mp_knot p;                    /* for running around the path */
     mp_number xp, yp;             /* coordinates of next point */
     mp_number x, y;               /* helper coordinates */
     mp_number arg1, arg2;
-    mp_angle in_angle, out_angle; /* helper angles */
-    mp_angle seven_twenty_deg_t;
+    mp_number in_angle, out_angle; /* helper angles */
+    mp_number seven_twenty_deg_t;
     set_number_to_zero(*turns);
     new_number(arg1);
     new_number(arg2);

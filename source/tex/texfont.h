@@ -92,9 +92,9 @@ typedef struct mathinfo {
     /*tex
        Optional code points for next smaller in size, right2left and flat accent glyphs.
     */
-    int       smaller;     
-    int       mirror;      
-    int       flat_accent; 
+    halfword  smaller;     
+    halfword  mirror;      
+    halfword  flat_accent; 
     /*tex 
         The top anchor is provides by the font and is also known as topaccent while the bottom 
         anchor is one set by (in our case) \CONTEXT.  

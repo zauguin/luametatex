@@ -5407,6 +5407,8 @@ static halfword tex_aux_make_left_right(halfword target, int style, scaled max_d
     scaled height = tex_aux_math_given_y_scaled(noad_height(target));
     scaled depth = tex_aux_math_given_y_scaled(noad_depth(target));
     int leftoperator = node_type(target) == fence_noad && node_subtype(target) == left_operator_side;
+    max_h += fence_top_overshoot(target);
+    max_d += fence_bottom_overshoot(target);
     if (extremes) { 
         extremes->tfont = null_font;
         extremes->bfont = null_font;

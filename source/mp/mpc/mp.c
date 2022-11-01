@@ -54,9 +54,9 @@
 # define  max_num_knot_nodes     1000
 # define  max_num_value_nodes    1000
 # define  max_num_symbolic_nodes 1000
-# define  mp_link(A)      (A)->link
-# define  mp_type(A)      (A)->type
-# define  mp_name_type(A) (A)->name_type
+//define  mp_link(A)      (A)->link
+//define  mp_type(A)      (A)->type
+//define  mp_name_type(A) (A)->name_type
 # define  mp_set_link(A,B) (A)->link = (mp_node) (B)
 # define  mp_max_command_code       mp_stop
 # define  mp_max_pre_command        mp_etex_command
@@ -143,8 +143,6 @@
 # define  one_third_inf_t mp->math->md_one_third_inf_t
 # define  mp_copy_pen(mp,A) mp_make_pen(mp, mp_copy_path(mp, (A)),0)
 # define  mp_pen_is_elliptical(A) ((A)==mp_next_knot((A)))
-# define  mp_fraction mp_number
-# define  mp_angle    mp_number
 # define  new_number(A)                           mp->math->md_allocate(mp, &(A), mp_scaled_type)
 # define  new_fraction(A)                         mp->math->md_allocate(mp, &(A), mp_fraction_type)
 # define  new_angle(A)                            mp->math->md_allocate(mp, &(A), mp_angle_type)
@@ -5808,9 +5806,9 @@ void mp_move_knot (MP mp, mp_knot p, mp_knot q)
 static void mp_find_offset (MP mp, mp_number *x_orig, mp_number *y_orig, mp_knot h)
 {
     if (mp_pen_is_elliptical(h)) {
-        mp_fraction xx, yy;
+        mp_number xx, yy;
         mp_number wx, wy, hx, hy;
-        mp_fraction d;
+        mp_number d;
         new_fraction(xx);
         new_fraction(yy);
         new_number(wx);
@@ -6984,7 +6982,7 @@ static void mp_adjust_bbox (MP mp, mp_edge_header_node h)
 static void mp_box_ends (MP mp, mp_knot p, mp_knot pp, mp_edge_header_node h)
 {
     if (mp_right_type(p) != mp_endpoint_knot) {
-        mp_fraction dx, dy;
+        mp_number dx, dy;
         mp_number d;
         mp_number z;
         mp_number xx, yy;
@@ -8012,7 +8010,7 @@ static mp_knot mp_make_envelope (MP mp, mp_knot c, mp_knot h, int linejoin, int 
     mp_knot w, w0;
     int k, k0;
     mp_number qx, qy;
-    mp_fraction dxin, dyin, dxout, dyout;
+    mp_number dxin, dyin, dxout, dyout;
     int join_type = 0;
     mp_number tmp;
     mp_number max_ht;
@@ -14363,13 +14361,13 @@ static void mp_bezier_slope (MP mp,
 static void mp_turn_cycles (MP mp, mp_number *turns, mp_knot c)
 {
     int selector;
-    mp_angle res, ang;
+    mp_number res, ang;
     mp_knot p;
     mp_number xp, yp;
     mp_number x, y;
     mp_number arg1, arg2;
-    mp_angle in_angle, out_angle;
-    mp_angle seven_twenty_deg_t;
+    mp_number in_angle, out_angle;
+    mp_number seven_twenty_deg_t;
     set_number_to_zero(*turns);
     new_number(arg1);
     new_number(arg2);

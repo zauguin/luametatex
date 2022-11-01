@@ -1555,36 +1555,36 @@ typedef enum simple_choice_subtypes {
 
     \starttabulate[|l|l|l|l|l|l|]
     \FL
-    \BC            \BC noad       \BC accent            \BC fraction         \BC radical         \NC fence  \NC \NR
-    \ML                                                                                          \NC        
-    \NC vlink  2   \NC new_hlist  \NC                   \NC                  \NC                 \NC        \NC \NR
-    \ML                                                                                          \NC        
-    \NC vinfo  2   \NC nucleus    \NC                   \NC                  \NC                 \NC        \NC \NR
-    \NC vlink  3   \NC supscr     \NC                   \NC numerator        \NC                 \NC        \NC \NR
-    \NC vinfo  3   \NC subscr     \NC                   \NC denominator      \NC                 \NC        \NC \NR
-    \NC vlink  4   \NC supprescr  \NC                   \NC                  \NC                 \NC        \NC \NR
-    \NC vinfo  4   \NC subprescr  \NC                   \NC                  \NC                 \NC        \NC \NR
-    \ML                                                                                          \NC        
-    \NC vlink  5   \NC italic     \NC                   \NC                  \NC                 \NC        \NC \NR
-    \NC vinfo  5   \NC width      \NC                   \NC                  \NC                 \NC        \NC \NR
-    \NC vlink  6   \NC height     \NC                   \NC                  \NC                 \NC        \NC \NR
-    \NC vinfo  6   \NC depth      \NC                   \NC                  \NC                 \NC        \NC \NR
-    \ML                                                                                          \NC        
-    \NC vlink  7   \NC options    \NC                   \NC                  \NC                 \NC        \NC \NR
-    \NC vinfo  7   \NC style      \NC                   \NC                  \NC                 \NC        \NC \NR
-    \NC vlink  8   \NC family     \NC                   \NC                  \NC                 \NC        \NC \NR
-    \NC vinfo  8   \NC class      \NC                   \NC                  \NC                 \NC        \NC \NR
-    \NC vlink  9   \NC source     \NC                   \NC                  \NC                 \NC        \NC \NR
-    \NC vinfo  9   \NC prime      \NC                   \NC                  \NC                 \NC        \NC \NR
-    \NC vlink 10   \NC leftslack  \NC                   \NC                  \NC                 \NC        \NC \NR
-    \NC vinfo 10   \NC rightslack \NC                   \NC                  \NC                 \NC        \NC \NR
-    \ML                                                                                          \NC       
-    \NC vlink 11   \NC extra_1    \NC top_character     \NC rule_thickness   \NC degree          \NC list   \NC \NR
-    \NC vinfo 11   \NC extra_2    \NC bot_character     \NC left_delimiter   \NC left_delimiter  \NC source \NC \NR
-    \NC vlink 12   \NC extra_3    \NC overlay_character \NC right_delimiter  \NC right_delimiter \NC top    \NC \NR
-    \NC vinfo 12   \NC extra_4    \NC fraction          \NC middle_delimiter \NC                 \NC bottom \NC \NR
-    \NC vlink 13   \NC extra_5    \NC topovershoot      \NC                  \NC height          \NC        \NC \NR
-    \NC vinfo 13   \NC extra_6    \NC botovershoot      \NC                  \NC depth           \NC        \NC \NR
+    \BC            \BC noad       \BC accent            \BC fraction         \BC radical         \NC fence        \NC \NR
+    \ML                                                                                          \NC              
+    \NC vlink  2   \NC new_hlist  \NC                   \NC                  \NC                 \NC              \NC \NR
+    \ML                                                                                          \NC              
+    \NC vinfo  2   \NC nucleus    \NC                   \NC                  \NC                 \NC              \NC \NR
+    \NC vlink  3   \NC supscr     \NC                   \NC numerator        \NC                 \NC              \NC \NR
+    \NC vinfo  3   \NC subscr     \NC                   \NC denominator      \NC                 \NC              \NC \NR
+    \NC vlink  4   \NC supprescr  \NC                   \NC                  \NC                 \NC              \NC \NR
+    \NC vinfo  4   \NC subprescr  \NC                   \NC                  \NC                 \NC              \NC \NR
+    \ML                                                                                          \NC              
+    \NC vlink  5   \NC italic     \NC                   \NC                  \NC                 \NC              \NC \NR
+    \NC vinfo  5   \NC width      \NC                   \NC                  \NC                 \NC              \NC \NR
+    \NC vlink  6   \NC height     \NC                   \NC                  \NC                 \NC              \NC \NR
+    \NC vinfo  6   \NC depth      \NC                   \NC                  \NC                 \NC              \NC \NR
+    \ML                                                                                          \NC              
+    \NC vlink  7   \NC options    \NC                   \NC                  \NC                 \NC              \NC \NR
+    \NC vinfo  7   \NC style      \NC                   \NC                  \NC                 \NC              \NC \NR
+    \NC vlink  8   \NC family     \NC                   \NC                  \NC                 \NC              \NC \NR
+    \NC vinfo  8   \NC class      \NC                   \NC                  \NC                 \NC              \NC \NR
+    \NC vlink  9   \NC source     \NC                   \NC                  \NC                 \NC              \NC \NR
+    \NC vinfo  9   \NC prime      \NC                   \NC                  \NC                 \NC              \NC \NR
+    \NC vlink 10   \NC leftslack  \NC                   \NC                  \NC                 \NC              \NC \NR
+    \NC vinfo 10   \NC rightslack \NC                   \NC                  \NC                 \NC              \NC \NR
+    \ML                                                                                          \NC              
+    \NC vlink 11   \NC extra_1    \NC top_character     \NC rule_thickness   \NC degree          \NC list         \NC \NR
+    \NC vinfo 11   \NC extra_2    \NC bot_character     \NC left_delimiter   \NC left_delimiter  \NC source       \NC \NR
+    \NC vlink 12   \NC extra_3    \NC overlay_character \NC right_delimiter  \NC right_delimiter \NC top          \NC \NR
+    \NC vinfo 12   \NC extra_4    \NC fraction          \NC middle_delimiter \NC                 \NC bottom       \NC \NR
+    \NC vlink 13   \NC extra_5    \NC topovershoot      \NC                  \NC height          \NC topovershoot \NC \NR
+    \NC vinfo 13   \NC extra_6    \NC botovershoot      \NC                  \NC depth           \NC botovershoot \NC \NR
     \LL
     \stoptabulate
 
@@ -1906,8 +1906,8 @@ typedef enum math_accent_subtypes {
 # define fence_delimiter_list   noad_extra_1    // not really a list
 # define fence_delimiter_top    noad_extra_3
 # define fence_delimiter_bottom noad_extra_4
-//define fence_delimiter_first  noad_extra_5
-//define fence_delimiter_last   noad_extra_6
+# define fence_top_overshoot    noad_extra_5
+# define fence_bottom_overshoot noad_extra_6
 
 typedef enum fence_subtypes {
     unset_fence_side,
