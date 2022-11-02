@@ -1013,7 +1013,6 @@ inline static halfword tex_aux_is_hyphen_char(halfword chr)
 static halfword tex_aux_find_next_wordstart(halfword r, halfword first_language)
 {
     int start_ok = 1;
-    int mathlevel = 1;
     halfword lastglyph = r;
     while (r) {
         switch (node_type(r)) {
@@ -1038,15 +1037,18 @@ static halfword tex_aux_find_next_wordstart(halfword r, halfword first_language)
                 start_ok = 1;
                 break;
             case math_node:
-                while (mathlevel > 0) {
-                    r = node_next(r);
-                    if (! r) {
-                        return r;
-                    } else if (node_type(r) == math_node) {
-                        if (node_subtype(r) == begin_inline_math) {
-                            mathlevel++;
-                        } else {
-                            mathlevel--;
+                if (node_subtype(r) == begin_inline_math) {
+                    int mathlevel = 1;
+                    while (mathlevel > 0) {
+                        r = node_next(r);
+                        if (! r) {
+                            return r;
+                        } else if (node_type(r) == math_node) {
+                            if (node_subtype(r) == begin_inline_math) {
+                                mathlevel++;
+                            } else {
+                                mathlevel--;
+                            }
                         }
                     }
                 }
