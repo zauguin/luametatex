@@ -371,7 +371,9 @@ static void tex_aux_print_fam(const char *what, halfword size, halfword fam)
 
 int tex_fam_fnt(int fam, int size)
 {
-    return (int) sa_get_item_4(lmt_math_state.fam_head, fam + (256 * size)).int_value;
+    sa_tree_item item;
+    sa_get_item_4(lmt_math_state.fam_head, fam + (256 * size), &item);
+    return (int) item.int_value;
 }
 
 void tex_def_fam_fnt(int fam, int size, int fnt, int level)
@@ -412,7 +414,7 @@ void tex_def_math_parameter(int style, int param, scaled value, int level, int i
     int different = 1;
     if (level <= 1) {
         if (math_parameter_value_type(param) == math_muglue_parameter) {
-            item1 = sa_get_item_8(lmt_math_state.par_head, (param + (math_parameter_max_range * style)), &item2);
+            sa_get_item_8(lmt_math_state.par_head, (param + (math_parameter_max_range * style)), &item1, &item2);
             if (item2.int_value == indirect_math_regular && item1.int_value > thick_mu_skip_code) {
                 if (lmt_node_memory_state.nodesizes[item1.int_value]) {
                     tex_free_node(item1.int_value, glue_spec_size);
@@ -421,7 +423,7 @@ void tex_def_math_parameter(int style, int param, scaled value, int level, int i
         }
     } else { 
         /*tex Less tracing at the cost of a lookup. */
-        item1 = sa_get_item_8(lmt_math_state.par_head, (param + (math_parameter_max_range * style)), &item2);
+        sa_get_item_8(lmt_math_state.par_head, (param + (math_parameter_max_range * style)), &item1, &item2);
         different = item1.int_value != value || item2.int_value != indirect;
     }
  // if (different) { // maybe
@@ -439,8 +441,8 @@ void tex_def_math_parameter(int style, int param, scaled value, int level, int i
 scaled tex_get_math_parameter(int style, int param, halfword *type)
 {
     halfword indirect, value;
-    sa_tree_item v2;
-    sa_tree_item v1 = sa_get_item_8(lmt_math_state.par_head, (param + (math_parameter_max_range * style)), &v2);
+    sa_tree_item v1, v2;
+    sa_get_item_8(lmt_math_state.par_head, (param + (math_parameter_max_range * style)), &v1, &v2);
     indirect = v2.int_value == lmt_math_state.par_head->dflt.int_value ? indirect_math_unset : v2.uint_value;
     value = v1.int_value;
     switch (indirect) {
@@ -661,8 +663,8 @@ scaled tex_get_math_parameter(int style, int param, halfword *type)
 
 int tex_has_math_parameter(int style, int param)
 {
-    sa_tree_item v2;
-    sa_get_item_8(lmt_math_state.par_head, (param + (math_parameter_max_range * style)), &v2);
+    sa_tree_item v1, v2;
+    sa_get_item_8(lmt_math_state.par_head, (param + (math_parameter_max_range * style)), &v1, &v2);
     return v2.int_value == lmt_math_state.par_head->dflt.int_value ? indirect_math_unset : v2.uint_value;
 }
 
@@ -674,9 +676,9 @@ static void tex_aux_unsave_math_parameter_data(int gl)
             if (item.level > 0) {
                 int param = item.code % math_parameter_max_range;
                 int style = item.code / math_parameter_max_range;
-                sa_tree_item item1, item2;
                 if (math_parameter_value_type(param) == math_muglue_parameter) {
-                    item1 = sa_get_item_8(lmt_math_state.par_head, item.code, &item2);
+                    sa_tree_item item1, item2;
+                    sa_get_item_8(lmt_math_state.par_head, item.code, &item1, &item2);
                     if (item2.int_value == indirect_math_regular && item1.int_value > thick_mu_skip_code) {
                      /* if (tex_valid_node(item1.int_value)) { */
                         if (lmt_node_memory_state.nodesizes[item1.int_value]) {
@@ -4667,6 +4669,27 @@ static void tex_aux_define_dis_math_parameters(int size, int param, scaled value
     }
 }
 
+/*tex
+    In principle we could save some storage in the format file with:
+
+    \starttyping
+    static void tex_aux_define_all_math_parameters(int size, int param, scaled value, int level)
+    {
+        tex_def_math_parameter(all_math_styles, param, value, level, indirect_math_regular);
+    } 
+    \stoptyping
+
+    and then do this (we also need to move |all_math_styles| up in the enum to keep ranges compact):
+
+    \starttyping
+    if (! sa_get_item_8(lmt_math_state.par_head, (param + (math_parameter_max_range * style)), &item1, &item2)) {
+        sa_get_item_8(lmt_math_state.par_head, (param + (math_parameter_max_range * all_math_styles)), &item1, &item2);
+    }
+    \stoptyping
+
+    but in practice we actually get a bit larger file. 
+*/
+
 static void tex_aux_define_all_math_parameters(int size, int param, scaled value, int level)
 {
     switch (size) {
@@ -4780,7 +4803,7 @@ inline static scaled tex_aux_get_font_math_quantity(scaled scale, halfword v)
 
 /*tex
     The next function is called when we define a family, but first we define a few helpers
-    for identifying traditional math fonts. Watch the hard codes family check!
+    for identifying traditional math fonts. Watch the hard codes family check (gone now)!
 */
 
 void tex_fixup_math_parameters(int fam, int size, int f, int level)

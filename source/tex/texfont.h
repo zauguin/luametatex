@@ -118,8 +118,8 @@ typedef struct mathinfo {
         the pointer and put a h/v flag in the tag field. For the moment we keep them both because
         we might want to play with a two dimensional extensible some day. 
     */
-    extinfo  *horizontal_parts;        
-    extinfo  *vertical_parts;          
+    extinfo  *extensible_recipe;        
+    scaled    extensible_italic;         
     /*tex These are for specific (script) anchoring. */
     scaled    top_left_kern;
     scaled    bottom_left_kern;
@@ -133,9 +133,6 @@ typedef struct mathinfo {
     /*tex As are the following. */
     scaled    top_overshoot;
     scaled    bottom_overshoot;
-    /*tex Currently only the vertical one is used. */
-    scaled    vertical_italic;         
-    scaled    horizontal_italic;         
     /*tex These are for degrees in radicals. */
     int       inner_location; 
     scaled    inner_x_offset; 
@@ -155,39 +152,53 @@ typedef struct charinfo {
     /*tex
         The next three variables relate to expansion and protrusion, properties introduced in the
         \PDFTEX\ engine. Handling of protrusion and expansion is the only features that we inherit
-        from this important extension to traditional \TEX.
+        from this important extension to traditional \TEX. 
     */
-    scaled        expansion;
+    scaled        expansion;         
     scaled        leftprotrusion;
     scaled        rightprotrusion;
     /*tex
-        These two are used in a \TFM\ file for signaling ligatures. They are also used for math
-        extensions in traditional \TEX\ fonts, so we just keep them. We pack the tag and remainder
+        The tag and remainder are used in a \TFM\ file for signaling ligatures. They are also used 
+        for math extensions in traditional \TEX\ fonts. We used to pack the tag and remainder
         in an integer: 2 bits is enough for the tag (but we get some more) and the remainder (aka 
-        next) fits in 21 bits.
+        next) fits in 21 bits. So we had |tagrem| for quite a while. 
 
-        When we need more bits I will make a 32 bit tag field here and move the next field to the
-        math blob (currently we would have an extra padding field there). We could consider a 
-        prev pointer but that only makes sense if we have unique sequences.
+        But we now use a 32 bit tag field and use proper next field because we need to padd this 
+        struct anyway. The next field can move to the math blob. We could consider a prev pointer 
+        but that only makes sense if we have unique sequences.
     */
-    halfword      tagrem; /* rem == next */
+    halfword      tag; 
+    halfword      next; /* can move to math, but then we need to padd there  */
     /*tex
         Traditional \TEX\ fonts use these two lists for ligature building and inter-character
         kerning and these are now optional (via pointers). By also using an indirect structure for
         math data we save quite a bit of memory when we have no math font.
     */
-    ligatureinfo *ligatures;
     kerninfo     *kerns;
-    mathinfo     *math;
+    mathinfo     *math;       /* can be a union */
+    ligatureinfo *ligatures;  /* with this one */
 } charinfo;
+
+/*
+    An option is to make this a pointer to a structure but then we also waste a slot. When we 
+    never support it in math then we can actually go smaller: 
+    
+    charinfo: 8 * 4 : width height depth italic tag *[text or math] *kerns padding 
+    textinfo: 4 * 4 : expansion leftprotrusion rightprotrusion *ligatures
+    mathinfo: 2 * 4 : next padding ... n * 4 
+
+    But ... given the amount of fields that \CONTEXT\ adds to the basic character data anyway 
+    there is no real reason to spend much time in saving some bytes here.  
+
+*/
 
 /*tex
     We can just abuse the token setters and getters here.
 */
 
-# define charinfo_tag    token_cmd
-# define charinfo_rem    token_chr
-# define charinfo_tagrem token_val
+//define charinfo_tag    token_cmd
+//define charinfo_rem    token_chr
+//define charinfo_tagrem token_val
 
 /*tex
 
@@ -442,16 +453,6 @@ extern int       tex_math_char_exists (halfword f, int c, int size);
 extern int       tex_get_math_char    (halfword f, int c, int size, scaled *scale, int direction);
 
 /*tex
-    Here is a quick way to test if a glyph exists, when you are already certain the font |f| exists,
-    and that the |c| is a regular glyph id, not one of the two special boundary objects. Contrary
-    to traditional \TEX\ we store character information in a hash table instead of an array. Keep
-    in mind that we talk \UNICODE: plenty of characters in the code space, but less so in a font,
-    so we can best be sparse.
-*/
-
-# define quick_char_exists(f,c) (sa_get_item_4(lmt_font_state.fonts[f]->characters,c).int_value)
-
-/*tex
     These low level setters are not publis and used in helpers. They might become functions
     when I feel the need.
 */
@@ -464,11 +465,11 @@ extern int       tex_get_math_char    (halfword f, int c, int size, scaled *scal
 # define set_charinfo_leftprotrusion(ci,val)               ci->leftprotrusion = val;
 # define set_charinfo_rightprotrusion(ci,val)              ci->rightprotrusion = val;
 
-# define set_charinfo_tag(ci,tag)                          ci->tagrem = charinfo_tagrem(charinfo_tag(ci->tagrem) | tag,charinfo_rem(ci->tagrem));
-# define set_charinfo_remainder(ci,rem)                    ci->tagrem = charinfo_tagrem(charinfo_tag(ci->tagrem),rem);
+# define set_charinfo_tag(ci,val)                          ci->tag |= val;
+# define set_charinfo_next(ci,val)                         ci->next = val;
 
-# define has_charinfo_tag(ci,p)                            (charinfo_tag(ci->tagrem) & (p) == (p)) 
-# define get_charinfo_tag(ci)                              charinfo_tag(ci->tagrem)
+# define has_charinfo_tag(ci,p)                            (ci->tag) & (p) == (p)) 
+# define get_charinfo_tag(ci)                              ci->tag
 
 # define set_charinfo_ligatures(ci,val)                    { lmt_memory_free(ci->ligatures); ci->ligatures = val; }
 # define set_charinfo_kerns(ci,val)                        { lmt_memory_free(ci->kerns);     ci->kerns     = val; }
@@ -491,8 +492,7 @@ extern int       tex_get_math_char    (halfword f, int c, int size, scaled *scal
 
 # define set_charinfo_smaller(ci,val)                      if (ci->math) { ci->math->smaller = val; }
 # define set_charinfo_mirror(ci,val)                       if (ci->math) { ci->math->mirror = val; }
-# define set_charinfo_horizontal_italic(ci,val)            if (ci->math) { ci->math->horizontal_italic = val; }
-# define set_charinfo_vertical_italic(ci,val)              if (ci->math) { ci->math->vertical_italic = val; }
+# define set_charinfo_extensible_italic(ci,val)            if (ci->math) { ci->math->extensible_italic = val; }
 # define set_charinfo_top_anchor(ci,val)                   if (ci->math) { ci->math->top_anchor = val; }
 # define set_charinfo_bottom_anchor(ci,val)                if (ci->math) { ci->math->bottom_anchor = val; }
 # define set_charinfo_flat_accent(ci,val)                  if (ci->math) { ci->math->flat_accent = val; }
@@ -515,14 +515,11 @@ void             tex_set_lpcode_in_font                 (halfword f, halfword c,
 void             tex_set_rpcode_in_font                 (halfword f, halfword c, halfword i);
 void             tex_set_efcode_in_font                 (halfword f, halfword c, halfword i);
 
-extern void      tex_set_charinfo_extensible            (charinfo *ci, int top, int bottom, int middle, int extender);
 extern void      tex_add_charinfo_math_kern             (charinfo *ci, int type, scaled ht, scaled krn);
 extern int       tex_get_charinfo_math_kerns            (charinfo *ci, int id);
-extern void      tex_set_charinfo_horizontal_parts      (charinfo *ci, extinfo *ext);
-extern void      tex_set_charinfo_vertical_parts        (charinfo *ci, extinfo *ext);
-extern void      tex_add_charinfo_vertical_part         (charinfo *ci, extinfo *ext);
-extern void      tex_add_charinfo_horizontal_part       (charinfo *ci, extinfo *ext);
-extern extinfo  *tex_new_charinfo_part                  (int glyph, int startconnect, int endconnect, int advance, int repeater);
+extern void      tex_set_charinfo_extensible_recipe     (charinfo *ci, extinfo *ext);
+extern void      tex_add_charinfo_extensible_step       (charinfo *ci, extinfo *ext);
+extern extinfo  *tex_new_charinfo_extensible_step       (int glyph, int startconnect, int endconnect, int advance, int repeater);
 
 /*tex Checkers: */
 
@@ -547,9 +544,10 @@ extern scaled    tex_char_ef_from_font                  (halfword f, halfword c)
 extern scaled    tex_char_lp_from_font                  (halfword f, halfword c); /* packaging + maincontrol */
 extern scaled    tex_char_rp_from_font                  (halfword f, halfword c); /* packaging + maincontrol */
 extern halfword  tex_char_tag_from_font                 (halfword f, halfword c); /* math */
-extern halfword  tex_char_remainder_from_font           (halfword f, halfword c); /* math */
+extern halfword  tex_char_next_from_font                (halfword f, halfword c); /* math */
 extern halfword  tex_char_has_tag_from_font             (halfword f, halfword c, halfword tag); 
 extern void      tex_char_reset_tag_from_font           (halfword f, halfword c, halfword tag); 
+extern int       tex_char_checked_tag                   (halfword tag);
 extern int       tex_char_inner_location_from_font      (halfword f, halfword c);
 extern scaled    tex_char_inner_x_offset_from_font      (halfword f, halfword c);
 extern scaled    tex_char_inner_y_offset_from_font      (halfword f, halfword c);
@@ -557,8 +555,7 @@ extern scaled    tex_char_top_left_kern_from_font       (halfword f, halfword c)
 extern scaled    tex_char_top_right_kern_from_font      (halfword f, halfword c); /* math */
 extern scaled    tex_char_bottom_left_kern_from_font    (halfword f, halfword c); /* math */
 extern scaled    tex_char_bottom_right_kern_from_font   (halfword f, halfword c); /* math */
-extern halfword  tex_char_horizontal_italic_from_font   (halfword f, halfword c);
-extern halfword  tex_char_vertical_italic_from_font     (halfword f, halfword c);
+extern halfword  tex_char_extensible_italic_from_font   (halfword f, halfword c);
 extern halfword  tex_char_flat_accent_from_font         (halfword f, halfword c);
 extern halfword  tex_char_top_anchor_from_font          (halfword f, halfword c);
 extern halfword  tex_char_bottom_anchor_from_font       (halfword f, halfword c);
@@ -571,8 +568,7 @@ extern scaled    tex_char_bottom_overshoot_from_font    (halfword f, halfword c)
 extern int       tex_char_inner_location_from_font      (halfword f, halfword c);
 extern scaled    tex_char_inner_x_offset_from_font      (halfword f, halfword c);
 extern scaled    tex_char_inner_y_offset_from_font      (halfword f, halfword c);
-extern extinfo  *tex_char_vertical_parts_from_font      (halfword f, halfword c);
-extern extinfo  *tex_char_horizontal_parts_from_font    (halfword f, halfword c);
+extern extinfo  *tex_char_extensible_recipe_from_font   (halfword f, halfword c);
 /*     halfword  tex_char_options_from_font             (halfword f, halfword c); */
 /*     int       tex_char_has_option_from_font          (halfword g, halfword c, int option); */
 
@@ -660,21 +656,32 @@ typedef enum math_extension_locations {
 } math_extension_locations;
 */
 
-/*tex Tags (bit 22 upto 31): */
+/*tex 
+    These used to be small integers, bit 22 upto 31, but now we have a 32 bit set. We actually don't 
+    really need the granularity but by having these flags we can actually add a bit of control, like 
+    having kerns but still blocking them. The numbers here are no longer reflective of what a tfm 
+    file provides. We assume tfm files to be converted anyway. 
 
-typedef enum tag_codes {
-    no_tag          = 0x000, /*tex vanilla character */
-    ligature_tag    = 0x001, /*tex character has a ligature/kerning program */ /* not used, if needed we can check the field */
-    list_tag        = 0x002, /*tex character has a successor in a charlist */  /* not needed, we can check the next pointer */
-    extension_tag   = 0x004, /*tex character is extensible */                  /* not needed, we can check the fields */
-    callback_tag    = 0x008,
-    extend_last_tag = 0x010,
-    italic_tag      = 0x020, /* maybe */
-    n_ary_tag       = 0x040, /* maybe */
-    radical_tag     = 0x080, /* maybe */
-    punctuation_tag = 0x100, /* maybe */
-    reserved_tag    = 0x200, /* maybe */
-} tag_codes;
+    Not all are needed but at least we now can keep some state. We can actually use them to something
+    if we really want to (like when we runt tests). However, that is a rather drastic measure for 
+    shared fonts. Tracing is another application. 
+*/
+
+typedef enum char_tag_codes {
+    no_tag          = 0x0000, /*tex vanilla character */
+    ligatures_tag   = 0x0001, /*tex character has a ligature program, not used */ 
+    kerns_tag       = 0x0002, /*tex character has a kerning program, not used */ 
+    list_tag        = 0x0004, /*tex character has a successor in a charlist */  
+    extensible_tag  = 0x0008, /*tex character is extensible, we can unset it in order to block */
+    horizontal_tag  = 0x0010, /*tex horizontal extensible */
+    vertical_tag    = 0x0020, /*tex vertical extensible */
+    callback_tag    = 0x0040,
+    extend_last_tag = 0x0080, /* auto scale last variant */
+    italic_tag      = 0x0100, /* maybe */
+    n_ary_tag       = 0x0200, /* maybe */
+    radical_tag     = 0x0400, /* maybe */
+    punctuation_tag = 0x0800, /* maybe */
+} char_tag_codes;
 
 extern halfword      tex_checked_font          (halfword f);
 extern int           tex_is_valid_font         (halfword f);

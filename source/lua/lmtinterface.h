@@ -725,7 +725,6 @@ make_lua_key(L, head);\
 make_lua_key(L, height);\
 make_lua_key(L, hextensible);\
 make_lua_key(L, hextensiblevariant);\
-make_lua_key(L, hitalic);\
 make_lua_key(L, hlist);\
 make_lua_key(L, hmodepar);\
 make_lua_key(L, hmove);\
@@ -733,7 +732,6 @@ make_lua_key(L, hoffset);\
 make_lua_key(L, holdhead);\
 make_lua_key(L, horizontal);\
 make_lua_key(L, horizontalmathkern);\
-make_lua_key(L, hparts);\
 make_lua_key(L, hrule);\
 make_lua_key(L, hsize);\
 make_lua_key(L, hskip);\
@@ -1048,6 +1046,9 @@ make_lua_key(L, parinitrightskip);\
 make_lua_key(L, parshape);\
 make_lua_key(L, parskip);\
 make_lua_key(L, passive);\
+make_lua_key(L, parts);\
+make_lua_key(L, partsitalic);\
+make_lua_key(L, partsorientation);\
 make_lua_key(L, pdfe);\
 make_lua_key(L, penalty);\
 make_lua_key(L, permanent);\
@@ -1337,6 +1338,7 @@ make_lua_key(L, supshiftup);\
 make_lua_key(L, supsubbottommax);\
 make_lua_key(L, surround);\
 make_lua_key(L, syllable);\
+make_lua_key(L, tag);\
 make_lua_key(L, tabskip);\
 make_lua_key(L, tail);\
 make_lua_key(L, target);\
@@ -1417,13 +1419,11 @@ make_lua_key(L, vertical);\
 make_lua_key(L, verticalmathkern);\
 make_lua_key(L, vextensible);\
 make_lua_key(L, vextensiblevariant);\
-make_lua_key(L, vitalic);\
 make_lua_key(L, vlist);\
 make_lua_key(L, vmode);\
 make_lua_key(L, vmodepar);\
 make_lua_key(L, vmove);\
 make_lua_key(L, void);\
-make_lua_key(L, vparts);\
 make_lua_key(L, vrule);\
 make_lua_key(L, vskip);\
 make_lua_key(L, vtop);\

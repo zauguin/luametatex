@@ -1067,7 +1067,7 @@ typedef enum math_styles {
 # define first_math_style display_style
 # define last_math_style  all_cramped_styles
 
-# define is_valid_math_style(n)   (n >= display_style   && n <= cramped_script_script_style)
+# define is_valid_math_style(n)   (n >= display_style      && n <= cramped_script_script_style)
 # define are_valid_math_styles(n) (n >= all_display_styles && n <= all_cramped_styles)
 
 inline static halfword tex_math_style_to_size(halfword s)

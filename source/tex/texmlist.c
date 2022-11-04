@@ -1019,7 +1019,6 @@ halfword tex_make_extensible(halfword fnt, halfword chr, scaled target, scaled m
     scaled max_natural = 0;
     /*tex amount of possible shrink in the stack */
     scaled max_shrink = 0;
-    extinfo *extensible = NULL;
     scaled overlap;
     /*tex a temporary counter number of extensible pieces */
     int pieces = 0;
@@ -1029,14 +1028,9 @@ halfword tex_make_extensible(halfword fnt, halfword chr, scaled target, scaled m
     int with_extenders = -1;
     int n_of_extenders = 0;
     int n_of_normal = 0;
+    extinfo *extensible = tex_char_extensible_recipe_from_font(fnt, chr);
     if (minoverlap < 0) {
         minoverlap = 0;
-    }
- /* chr = math_char_exists(fnt, chr, math_state.size); */
-    if (horizontal) {
-        extensible = tex_char_horizontal_parts_from_font(fnt, chr);
-    } else {
-        extensible = tex_char_vertical_parts_from_font(fnt, chr);
     }
     tex_attach_attribute_list_attribute(box, att);
     for (extinfo *e = extensible; e; e = e->next) {
@@ -1427,7 +1421,7 @@ static halfword tex_aux_make_delimiter(halfword target, halfword delimiter, int 
                                 goto FOUND;
                             }
                         }
-                        if (tex_char_has_tag_from_font(curfnt, curchr, extension_tag)) {
+                        if (tex_char_has_tag_from_font(curfnt, curchr, extensible_tag)) {
                             fnt = curfnt;
                             chr = curchr;
                             do_parts = 1;
@@ -1438,7 +1432,7 @@ static halfword tex_aux_make_delimiter(halfword target, halfword delimiter, int 
                         } else if (tex_char_has_tag_from_font(curfnt, curchr, list_tag)) {
                             prvfnt = curfnt;
                             prvchr = curchr;
-                            curchr = tex_char_remainder_from_font(curfnt, curchr);
+                            curchr = tex_char_next_from_font(curfnt, curchr);
                             goto CONTINUE;
                         }
                     }
@@ -1469,18 +1463,14 @@ static halfword tex_aux_make_delimiter(halfword target, halfword delimiter, int 
             When the following code is executed, |do_parts| will be true if a built-up symbol is
             supposed to be returned.
         */
-        extinfo *ext = NULL;
-        if (do_parts) {
-         /* tex_char_process(fnt, chr); */ /* in case we realloc */
-            ext = flat ? tex_char_horizontal_parts_from_font(fnt, chr) : tex_char_vertical_parts_from_font(fnt, chr);
-        }
+        extinfo *ext = do_parts ? tex_char_extensible_recipe_from_font(fnt, chr) : NULL;
         if (ext) {
             scaled minoverlap = flat ? tex_get_math_x_parameter_default(style, math_parameter_connector_overlap_min, 0) : tex_get_math_y_parameter_default(style, math_parameter_connector_overlap_min, 0);;
             result = tex_aux_get_delimiter_box(fnt, chr, targetsize, minoverlap, flat, att);
             if (delta) {
                 /*tex Not yet done: horizontal italics. */
                 if (tex_aux_math_engine_control(fnt, math_control_apply_vertical_italic_kern)) {
-                    *delta = tex_aux_math_x_size_scaled(fnt, tex_char_vertical_italic_from_font(fnt, nxtchr), size);
+                    *delta = tex_aux_math_x_size_scaled(fnt, tex_char_extensible_italic_from_font(fnt, nxtchr), size);
                 } else {
                     *delta = tex_aux_math_x_size_scaled(fnt, tex_char_italic_from_font(fnt, nxtchr), size);
                 }
@@ -2921,8 +2911,8 @@ static void tex_aux_do_make_math_accent(halfword target, halfword accentfnt, hal
             target = tex_xn_over_d(target, fraction, 1000);
         }
         while (1) {
-            if (tex_char_has_tag_from_font(accentfnt, accentchr, extension_tag)) {
-                extended = tex_char_horizontal_parts_from_font(accentfnt, accentchr);
+            if (tex_char_has_tag_from_font(accentfnt, accentchr, extensible_tag)) {
+                extended = tex_char_extensible_recipe_from_font(accentfnt, accentchr);
             }
             if (extended) {
                 /*tex
@@ -2936,19 +2926,19 @@ static void tex_aux_do_make_math_accent(halfword target, halfword accentfnt, hal
             } else if (! tex_char_has_tag_from_font(accentfnt, accentchr, list_tag)) {
                 break;
             } else {
-                halfword remainder = tex_char_remainder_from_font(accentfnt, accentchr);
-                if (! tex_char_exists(accentfnt, remainder)) {
+                halfword next = tex_char_next_from_font(accentfnt, accentchr);
+                if (! tex_char_exists(accentfnt, next)) {
                     break;
                 } else if (flags & overlay_accent_code) {
-                    if (tex_aux_math_y_size_scaled(accentfnt, tex_char_height_from_font(accentfnt, remainder), size) > target) {
+                    if (tex_aux_math_y_size_scaled(accentfnt, tex_char_height_from_font(accentfnt, next), size) > target) {
                         break;
                     }
                 } else {
-                    if (tex_aux_math_x_size_scaled(accentfnt, tex_char_width_from_font(accentfnt, remainder), size) > target) {
+                    if (tex_aux_math_x_size_scaled(accentfnt, tex_char_width_from_font(accentfnt, next), size) > target) {
                         break;
                     }
                 }
-                accentchr = remainder;
+                accentchr = next;
             }
         }
         /*tex
@@ -3942,9 +3932,9 @@ static scaled tex_aux_op_wrapup(halfword target, int style, int size, int italic
             }
             */
             while (tex_char_has_tag_from_font(fnt, chr, list_tag) && tex_char_total_from_font(fnt, chr) < opsize) {
-                halfword rem = tex_char_remainder_from_font(fnt, chr);
-                if (chr != rem && tex_char_exists(fnt, rem)) {
-                    chr = rem;
+                halfword next = tex_char_next_from_font(fnt, chr);
+                if (chr != next && tex_char_exists(fnt, next)) {
+                    chr = next;
                     kernel_math_character(noad_nucleus(target)) = chr;
                 } else {
                     break;
