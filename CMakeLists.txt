@@ -119,6 +119,11 @@ if (MSVC)
         add_definitions(-DLMT_COMPILER_USED="gcc")
     endif()
 
+    add_compile_options(
+        -fvisibility=hidden
+        -DLUASOCKET_API=
+    )
+
     if (CMAKE_SYSTEM_NAME MATCHES "Windows")
         add_link_options(
             $<$<CONFIG:RELEASE>:-Wl,--discard-all>
@@ -129,6 +134,7 @@ if (MSVC)
         add_link_options(
             $<$<CONFIG:RELEASE>:-Wl,--discard-all>
             $<$<CONFIG:RELEASE>:-Wl,--strip-debug>
+            -export-dynamic
         )
     endif()
 

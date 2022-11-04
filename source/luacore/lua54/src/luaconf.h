@@ -279,7 +279,11 @@
 
 #else				/* }{ */
 
-#define LUA_API		extern
+#ifdef _WIN32
+#define LUA_API		__declspec(dllexport)
+#else
+#define LUA_API		__attribute__ ((visibility ("default")))
+#endif
 
 #endif				/* } */
 
@@ -288,7 +292,7 @@
 ** More often than not the libs go together with the core.
 */
 #define LUALIB_API	LUA_API
-#define LUAMOD_API	LUA_API
+#define LUAMOD_API	extern
 
 
 /*
