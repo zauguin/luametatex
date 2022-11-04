@@ -462,12 +462,16 @@ typedef enum convert_codes {
 # define first_convert_code number_code
 # define last_convert_code  luatex_banner_code
 
+/*tex 
+    At some point we might make |token_input_code| behave like |tex_token_input_code| and get rid
+    of |\everyeof| which is a quite useless feature that does more harm than good. 
+*/
+
 typedef enum input_codes {
     normal_input_code,
     end_of_input_code,
     token_input_code,
     tex_token_input_code,
-    /* for now private */
     tokenized_code,
     retokenized_code,
     quit_loop_code,

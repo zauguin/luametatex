@@ -347,23 +347,16 @@ inline static int tokenlib_aux_to_valid_index(int cmd, int chr)
             case internal_command_item:
             case reference_command_item:
             case data_command_item:
-                {
-                    halfword c = chr;
-                    switch (item.base) {
-                        case ignore_entry:
-                            return 0;
-                        case direct_entry:
-                            break;
-                        default:
-                            chr -= item.base;
-                            break;
-                    }
-                    if (c >= item.min && c <= item.max) {
-                        return c;
-                    } else {
-                        return item.min;
-                    }
+                switch (item.base) {
+                    case ignore_entry:
+                        return 0;
+                    case direct_entry:
+                        break;
+                    default:
+                        chr -= item.base;
+                        break;
                 }
+                return (chr >= item.min && chr <= item.max) ? chr : item.min;
             case token_command_item:
             case node_command_item:
                 return item.fixedvalue;

@@ -72,12 +72,6 @@ typedef struct extinfo {
     int             padding;
 } extinfo;
 
-// typedef enum math_font_options {
-//     math_font_ignore_italic_option = 0x01,
-// } math_font_options;
-//
-// # define math_font_option(options,option) ((options & option) == option)
-
 /*tex 
     We have dedicated fields for hparts and vparts and their italics. Only avery few fonts actually
     set the italic on the extensible which is why the engine can use the regular italic, which in 
@@ -86,6 +80,9 @@ typedef struct extinfo {
     while in the engine (in good \TEX\ tradition) we chain the variants (with the next field)) so by 
     the time we arrive at the last one we look at the (h,v) italic there. No fonts (so far) have a 
     horizontal extensible with a set italic correction. 
+    
+    Actually, because the specification is rather explicit about glyphs only having horizontal or
+    vertical extensibles we now have collapsed the two categories into one.
 */
 
 typedef struct mathinfo {
@@ -134,7 +131,7 @@ typedef struct mathinfo {
     scaled    top_overshoot;
     scaled    bottom_overshoot;
     /*tex These are for degrees in radicals. */
-    int       inner_location; 
+    int       inner_location; /* could be a tag bit */
     scaled    inner_x_offset; 
     scaled    inner_y_offset; 
 } mathinfo;
@@ -153,6 +150,11 @@ typedef struct charinfo {
         The next three variables relate to expansion and protrusion, properties introduced in the
         \PDFTEX\ engine. Handling of protrusion and expansion is the only features that we inherit
         from this important extension to traditional \TEX. 
+
+        We can make the next three into a a pointer which saves on large fonts and only a subset 
+        of characters has protrusion or expansion, if used at all. That way we delegate some memory 
+        consumption to usage (of course allocated blobs also have overhead).  
+
     */
     scaled        expansion;         
     scaled        leftprotrusion;
@@ -165,10 +167,10 @@ typedef struct charinfo {
 
         But we now use a 32 bit tag field and use proper next field because we need to padd this 
         struct anyway. The next field can move to the math blob. We could consider a prev pointer 
-        but that only makes sense if we have unique sequences.
+        but that only makes sense if we have unique sequences and so far we never needed it. 
     */
     halfword      tag; 
-    halfword      next; /* can move to math, but then we need to padd there  */
+    halfword      next; /* can move to math, but then we need to padd there */
     /*tex
         Traditional \TEX\ fonts use these two lists for ligature building and inter-character
         kerning and these are now optional (via pointers). By also using an indirect structure for
@@ -452,6 +454,33 @@ extern void      tex_char_process     (halfword f, int c);
 extern int       tex_math_char_exists (halfword f, int c, int size);
 extern int       tex_get_math_char    (halfword f, int c, int size, scaled *scale, int direction);
 
+/*tex 
+    These used to be small integers, bit 22 upto 31, but now we have a 32 bit set. We actually don't 
+    really need the granularity but by having these flags we can actually add a bit of control, like 
+    having kerns but still blocking them. The numbers here are no longer reflective of what a tfm 
+    file provides. We assume tfm files to be converted anyway. 
+
+    Not all are needed but at least we now can keep some state. We can actually use them to something
+    if we really want to (like when we runt tests). However, that is a rather drastic measure for 
+    shared fonts. Tracing is another application. 
+*/
+
+typedef enum char_tag_codes {
+    no_tag          = 0x0000, /*tex vanilla character */
+    ligatures_tag   = 0x0001, /*tex character has a ligature program, not used */ 
+    kerns_tag       = 0x0002, /*tex character has a kerning program, not used */ 
+    list_tag        = 0x0004, /*tex character has a successor in a charlist */  
+    extensible_tag  = 0x0008, /*tex character is extensible, we can unset it in order to block */
+    horizontal_tag  = 0x0010, /*tex horizontal extensible */
+    vertical_tag    = 0x0020, /*tex vertical extensible */
+    callback_tag    = 0x0040,
+    extend_last_tag = 0x0080, /* auto scale last variant */
+    italic_tag      = 0x0100, /* maybe */
+    n_ary_tag       = 0x0200, /* maybe */
+    radical_tag     = 0x0400, /* maybe */
+    punctuation_tag = 0x0800, /* maybe */
+} char_tag_codes;
+
 /*tex
     These low level setters are not publis and used in helpers. They might become functions
     when I feel the need.
@@ -518,8 +547,9 @@ void             tex_set_efcode_in_font                 (halfword f, halfword c,
 extern void      tex_add_charinfo_math_kern             (charinfo *ci, int type, scaled ht, scaled krn);
 extern int       tex_get_charinfo_math_kerns            (charinfo *ci, int id);
 extern void      tex_set_charinfo_extensible_recipe     (charinfo *ci, extinfo *ext);
-extern void      tex_add_charinfo_extensible_step       (charinfo *ci, extinfo *ext);
-extern extinfo  *tex_new_charinfo_extensible_step       (int glyph, int startconnect, int endconnect, int advance, int repeater);
+extern void      tex_append_charinfo_extensible_recipe  (charinfo *ci, int glyph, int startconnect, int endconnect, int advance, int repeater);
+/*     void      tex_add_charinfo_extensible_step       (charinfo *ci, extinfo *ext); */
+/*     extinfo  *tex_new_charinfo_extensible_step       (int glyph, int startconnect, int endconnect, int advance, int repeater); */
 
 /*tex Checkers: */
 
@@ -655,33 +685,6 @@ typedef enum math_extension_locations {
     extension_repeat,
 } math_extension_locations;
 */
-
-/*tex 
-    These used to be small integers, bit 22 upto 31, but now we have a 32 bit set. We actually don't 
-    really need the granularity but by having these flags we can actually add a bit of control, like 
-    having kerns but still blocking them. The numbers here are no longer reflective of what a tfm 
-    file provides. We assume tfm files to be converted anyway. 
-
-    Not all are needed but at least we now can keep some state. We can actually use them to something
-    if we really want to (like when we runt tests). However, that is a rather drastic measure for 
-    shared fonts. Tracing is another application. 
-*/
-
-typedef enum char_tag_codes {
-    no_tag          = 0x0000, /*tex vanilla character */
-    ligatures_tag   = 0x0001, /*tex character has a ligature program, not used */ 
-    kerns_tag       = 0x0002, /*tex character has a kerning program, not used */ 
-    list_tag        = 0x0004, /*tex character has a successor in a charlist */  
-    extensible_tag  = 0x0008, /*tex character is extensible, we can unset it in order to block */
-    horizontal_tag  = 0x0010, /*tex horizontal extensible */
-    vertical_tag    = 0x0020, /*tex vertical extensible */
-    callback_tag    = 0x0040,
-    extend_last_tag = 0x0080, /* auto scale last variant */
-    italic_tag      = 0x0100, /* maybe */
-    n_ary_tag       = 0x0200, /* maybe */
-    radical_tag     = 0x0400, /* maybe */
-    punctuation_tag = 0x0800, /* maybe */
-} char_tag_codes;
 
 extern halfword      tex_checked_font          (halfword f);
 extern int           tex_is_valid_font         (halfword f);

@@ -327,14 +327,15 @@ static void fontlib_aux_font_char_from_lua(lua_State *L, halfword f, int i, int 
                 for (lua_Integer k = 1; ; k++) {
                     if (lua_rawgeti(L, -1, k) == LUA_TTABLE) {
                         int glyph, startconnect, endconnect, advance, extender;
-                        extinfo *h;
+                     // extinfo *h;
                         set_numeric_field_by_index(glyph, glyph, 0);
                         set_numeric_field_by_index(extender, extender, 0);
                         set_numeric_field_by_index(startconnect, start, 0);
                         set_numeric_field_by_index(endconnect, end, 0);
                         set_numeric_field_by_index(advance, advance, 0);
-                        h = tex_new_charinfo_extensible_step(glyph, startconnect, endconnect, advance, extender);
-                        tex_add_charinfo_extensible_step(co, h);
+                     // h = tex_new_charinfo_extensible_step(glyph, startconnect, endconnect, advance, extender);
+                     // tex_add_charinfo_extensible_step(co, h);
+                        tex_append_charinfo_extensible_recipe(co, glyph, startconnect, endconnect, advance, extender);
                         lua_pop(L, 1);
                     } else {
                         lua_pop(L, 1);

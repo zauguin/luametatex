@@ -444,6 +444,7 @@ int tex_get_math_char(halfword f, int c, int size, scaled *scale, int direction)
     return c;
 }
 
+/*
 extinfo *tex_new_charinfo_extensible_step(int glyph, int startconnect, int endconnect, int advance, int extender)
 {
     int size = sizeof(extinfo);
@@ -465,13 +466,41 @@ void tex_add_charinfo_extensible_step(charinfo *ci, extinfo *ext)
 {
     if (ci->math) {
         extinfo *lst = ci->math->extensible_recipe;
-        if (ci->math->extensible_recipe) {
+        if (lst) {
             while (lst->next) {
                 lst = lst->next;
             }
             lst->next = ext;
         } else {
             ci->math->extensible_recipe = ext;
+        }
+    }
+}
+*/
+
+void tex_append_charinfo_extensible_recipe(charinfo *ci, int glyph, int startconnect, int endconnect, int advance, int extender)
+{
+    if (ci->math) {
+        int size = sizeof(extinfo);
+        extinfo *ext = lmt_memory_malloc((size_t) size);
+        if (ext) {
+            extinfo *lst = ci->math->extensible_recipe;
+            ext->next = NULL;
+            ext->glyph = glyph;
+            ext->start_overlap = startconnect;
+            ext->end_overlap = endconnect;
+            ext->advance = advance;
+            ext->extender = extender;
+            if (lst) {
+                while (lst->next) {
+                    lst = lst->next;
+                }
+                lst->next = ext;
+            } else {
+                ci->math->extensible_recipe = ext;
+            }
+        } else {
+            tex_overflow_error("font", size);
         }
     }
 }

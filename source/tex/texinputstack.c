@@ -392,14 +392,16 @@ static void tex_aux_print_current_input_state(void)
     } else {
         switch (lmt_input_state.cur_input.name) {
             case io_initial_input_code:
-                tex_print_str("initial");
+                tex_print_str("initial input");
                 break;
             case io_lua_input_code:
-                tex_print_str("lua output");
+                tex_print_str("lua input");
                 break;
             case io_token_input_code:
+                tex_print_str("token input");
+                break;
             case io_token_eof_input_code:
-                tex_print_str("scantokens");
+                tex_print_str("token eof input");
                 break;
             case io_tex_macro_code:
             case io_file_input_code:
@@ -1064,9 +1066,15 @@ void tex_initialize_inputstack(void)
     lmt_input_state.align_state = 1000000;
 }
 
+/*tex 
+    Currently |iotype| can be |io_token_input_code| or |io_token_eof_input_code| but the idea 
+    was to get rid of the eof variant. However, it seems that there are still use cases (not 
+    in \CONTEXT).
+*/
+
 void tex_tex_string_start(int iotype, int cattable)
 {
-    (void) iotype;
+ /* (void) iotype; */ 
     {
         halfword head = tex_scan_general_text(NULL);
         int saved_selector = lmt_print_state.selector;
@@ -1083,7 +1091,7 @@ void tex_tex_string_start(int iotype, int cattable)
         lmt_input_state.input_line = 0;
         lmt_input_state.cur_input.limit = lmt_input_state.cur_input.start;
         lmt_input_state.cur_input.loc = lmt_input_state.cur_input.limit + 1;
-        lmt_input_state.cur_input.name = io_token_input_code;
+        lmt_input_state.cur_input.name = iotype; /* io_token_input_code; */
         lmt_cstring_start();
     }
 }
