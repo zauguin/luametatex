@@ -2340,10 +2340,10 @@ static void tex_aux_make_root_radical(halfword target, int style, int size, kern
         }
         delimiter = tex_aux_make_delimiter(target, delimiter, size, box_total(nucleus) + clearance + theta, 0, style, 1, NULL, NULL, 0, has_noad_option_nooverflow(target), &extremes, 0);
         if (radical_degree(target)) { 
-            if (tex_char_inner_location_from_font(extremes.bfont, extremes.bchar) == inner_location_left) { 
+            if (tex_char_has_tag_from_font(extremes.bfont, extremes.bchar, inner_left_tag)) { 
                 innerx = tex_char_inner_x_offset_from_font(extremes.bfont, extremes.bchar);
                 innery = tex_char_inner_y_offset_from_font(extremes.bfont, extremes.bchar);
-            } else if (tex_char_inner_location_from_font(extremes.tfont, extremes.tchar) == inner_location_left) { 
+            } else if (tex_char_has_tag_from_font(extremes.tfont, extremes.tchar, inner_left_tag)) { 
                 innerx = tex_char_inner_x_offset_from_font(extremes.tfont, extremes.tchar);
                 innery = tex_char_inner_y_offset_from_font(extremes.tfont, extremes.tchar);
             }

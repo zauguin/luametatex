@@ -92,6 +92,7 @@ typedef struct mathinfo {
     halfword  smaller;     
     halfword  mirror;      
     halfword  flat_accent; 
+    halfword  next;
     /*tex 
         The top anchor is provides by the font and is also known as topaccent while the bottom 
         anchor is one set by (in our case) \CONTEXT.  
@@ -131,7 +132,6 @@ typedef struct mathinfo {
     scaled    top_overshoot;
     scaled    bottom_overshoot;
     /*tex These are for degrees in radicals. */
-    int       inner_location; /* could be a tag bit */
     scaled    inner_x_offset; 
     scaled    inner_y_offset; 
 } mathinfo;
@@ -166,19 +166,22 @@ typedef struct charinfo {
         next) fits in 21 bits. So we had |tagrem| for quite a while. 
 
         But we now use a 32 bit tag field and use proper next field because we need to padd this 
-        struct anyway. The next field can move to the math blob. We could consider a prev pointer 
-        but that only makes sense if we have unique sequences and so far we never needed it. 
+        struct anyway. The next field can move to the math blob. The next fiels is now in the math 
+        blob where it belongs but it can move here again when we need an extra slot there. 
     */
     halfword      tag; 
-    halfword      next; /* can move to math, but then we need to padd there */
+    halfword      padding; 
     /*tex
         Traditional \TEX\ fonts use these two lists for ligature building and inter-character
         kerning and these are now optional (via pointers). By also using an indirect structure for
         math data we save quite a bit of memory when we have no math font.
+
+        We could combine math and ligatures and save two slots but then we cannot have a hybrid base
+        font so ... not now. 
     */
     kerninfo     *kerns;
-    mathinfo     *math;       /* can be a union */
-    ligatureinfo *ligatures;  /* with this one */
+    mathinfo     *math;       
+    ligatureinfo *ligatures;  
 } charinfo;
 
 /*
@@ -349,14 +352,9 @@ typedef enum boundarychar_codes {
 
 /*tex
     The math engine can benefit from these properties. For instance we use them for optimizing 
-    the positioning of the degree in a (left) radical. 
+    the positioning of the degree in a (left) radical. These properties are not stored in the 
+    tag (for a short while we had a variable).
 */
-
-typedef enum inner_anchor_location_codes {
-    inner_location_none,
-    inner_location_left,
-    inner_location_right,
-} inner_anchor_location_codes;
 
 /*tex
     In traditional \TEX\ there are just over a handful of font specific parameters for text fonts
@@ -470,15 +468,17 @@ typedef enum char_tag_codes {
     ligatures_tag   = 0x0001, /*tex character has a ligature program, not used */ 
     kerns_tag       = 0x0002, /*tex character has a kerning program, not used */ 
     list_tag        = 0x0004, /*tex character has a successor in a charlist */  
-    extensible_tag  = 0x0008, /*tex character is extensible, we can unset it in order to block */
-    horizontal_tag  = 0x0010, /*tex horizontal extensible */
-    vertical_tag    = 0x0020, /*tex vertical extensible */
-    callback_tag    = 0x0040,
-    extend_last_tag = 0x0080, /* auto scale last variant */
-    italic_tag      = 0x0100, /* maybe */
-    n_ary_tag       = 0x0200, /* maybe */
-    radical_tag     = 0x0400, /* maybe */
-    punctuation_tag = 0x0800, /* maybe */
+    callback_tag    = 0x0010,
+    extensible_tag  = 0x0020, /*tex character is extensible, we can unset it in order to block */
+    horizontal_tag  = 0x0040, /*tex horizontal extensible */
+    vertical_tag    = 0x0080, /*tex vertical extensible */
+    extend_last_tag = 0x0100, /*tex auto scale last variant */
+    inner_left_tag  = 0x0200, /*tex anchoring */
+    inner_right_tag = 0x0400, /*tex anchoring */
+    italic_tag      = 0x0800, 
+    n_ary_tag       = 0x1000, 
+    radical_tag     = 0x2000, 
+    punctuation_tag = 0x4000, 
 } char_tag_codes;
 
 /*tex
@@ -495,7 +495,7 @@ typedef enum char_tag_codes {
 # define set_charinfo_rightprotrusion(ci,val)              ci->rightprotrusion = val;
 
 # define set_charinfo_tag(ci,val)                          ci->tag |= val;
-# define set_charinfo_next(ci,val)                         ci->next = val;
+# define set_charinfo_next(ci,val)                         if (ci->math) { ci->math->next = val; }
 
 # define has_charinfo_tag(ci,p)                            (ci->tag) & (p) == (p)) 
 # define get_charinfo_tag(ci)                              ci->tag
@@ -526,7 +526,6 @@ typedef enum char_tag_codes {
 # define set_charinfo_bottom_anchor(ci,val)                if (ci->math) { ci->math->bottom_anchor = val; }
 # define set_charinfo_flat_accent(ci,val)                  if (ci->math) { ci->math->flat_accent = val; }
 
-# define set_charinfo_inner_location(ci,val)               if (ci->math) { ci->math->inner_location = val; }
 # define set_charinfo_inner_x_offset(ci,val)               if (ci->math) { ci->math->inner_x_offset = val; }
 # define set_charinfo_inner_y_offset(ci,val)               if (ci->math) { ci->math->inner_y_offset = val; }
 
@@ -578,7 +577,6 @@ extern halfword  tex_char_next_from_font                (halfword f, halfword c)
 extern halfword  tex_char_has_tag_from_font             (halfword f, halfword c, halfword tag); 
 extern void      tex_char_reset_tag_from_font           (halfword f, halfword c, halfword tag); 
 extern int       tex_char_checked_tag                   (halfword tag);
-extern int       tex_char_inner_location_from_font      (halfword f, halfword c);
 extern scaled    tex_char_inner_x_offset_from_font      (halfword f, halfword c);
 extern scaled    tex_char_inner_y_offset_from_font      (halfword f, halfword c);
 extern scaled    tex_char_top_left_kern_from_font       (halfword f, halfword c); /* math */
@@ -595,12 +593,9 @@ extern scaled    tex_char_top_margin_from_font          (halfword f, halfword c)
 extern scaled    tex_char_bottom_margin_from_font       (halfword f, halfword c);
 extern scaled    tex_char_top_overshoot_from_font       (halfword f, halfword c);
 extern scaled    tex_char_bottom_overshoot_from_font    (halfword f, halfword c);
-extern int       tex_char_inner_location_from_font      (halfword f, halfword c);
 extern scaled    tex_char_inner_x_offset_from_font      (halfword f, halfword c);
 extern scaled    tex_char_inner_y_offset_from_font      (halfword f, halfword c);
 extern extinfo  *tex_char_extensible_recipe_from_font   (halfword f, halfword c);
-/*     halfword  tex_char_options_from_font             (halfword f, halfword c); */
-/*     int       tex_char_has_option_from_font          (halfword g, halfword c, int option); */
 
 extern halfword  tex_char_unchecked_top_anchor_from_font    (halfword f, halfword c);
 extern halfword  tex_char_unchecked_bottom_anchor_from_font (halfword f, halfword c);
@@ -612,11 +607,6 @@ extern scaled    tex_char_total_from_glyph              (halfword g); /* x/y sca
 extern scaled    tex_char_italic_from_glyph             (halfword g); /* x/y scaled */
 extern scaled    tex_char_width_italic_from_glyph       (halfword g); /* x/y scaled */
 extern scaledwhd tex_char_whd_from_glyph                (halfword g); /* x/y scaled */
-/*     int       tex_char_options_from_glyph            (halfword g); */ 
-/*     int       tex_char_has_option_from_glyph         (halfword g, int option); */
-                                                       
-/*     scaled    tex_math_kern_at                       (halfword f, int c, int side, int v); */
-/*     scaled    tex_find_math_kern                     (halfword l_f, int l_c, halfword r_f, int r_c, int cmd, scaled shift); */
                                                        
 extern int       tex_valid_kern                         (halfword left, halfword right);            /* returns kern */
 extern int       tex_valid_ligature                     (halfword left, halfword right, int *slot); /* returns type */

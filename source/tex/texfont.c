@@ -444,40 +444,6 @@ int tex_get_math_char(halfword f, int c, int size, scaled *scale, int direction)
     return c;
 }
 
-/*
-extinfo *tex_new_charinfo_extensible_step(int glyph, int startconnect, int endconnect, int advance, int extender)
-{
-    int size = sizeof(extinfo);
-    extinfo *ext = lmt_memory_malloc((size_t) size);
-    if (ext) {
-        ext->next = NULL;
-        ext->glyph = glyph;
-        ext->start_overlap = startconnect;
-        ext->end_overlap = endconnect;
-        ext->advance = advance;
-        ext->extender = extender;
-    } else {
-        tex_overflow_error("font", size);
-    }
-    return ext;
-}
-
-void tex_add_charinfo_extensible_step(charinfo *ci, extinfo *ext)
-{
-    if (ci->math) {
-        extinfo *lst = ci->math->extensible_recipe;
-        if (lst) {
-            while (lst->next) {
-                lst = lst->next;
-            }
-            lst->next = ext;
-        } else {
-            ci->math->extensible_recipe = ext;
-        }
-    }
-}
-*/
-
 void tex_append_charinfo_extensible_recipe(charinfo *ci, int glyph, int startconnect, int endconnect, int advance, int extender)
 {
     if (ci->math) {
@@ -1737,32 +1703,29 @@ scaled tex_char_rp_from_font(halfword f, halfword c)
 
 halfword tex_char_has_tag_from_font(halfword f, halfword c, halfword tag)
 {
- // return (charinfo_tag(tex_aux_char_info(f, c)->tagrem) & tag) == tag;
     return (tex_aux_char_info(f, c)->tag & tag) == tag;
 }
 
 void tex_char_reset_tag_from_font(halfword f, halfword c, halfword tag)
 {
     charinfo *ci = tex_aux_char_info(f, c);
- // tag = charinfo_tag(ci->tagrem) & ~(tag);
- // ci->tagrem = charinfo_tagrem(tag,charinfo_rem(ci->tagrem));
     ci->tag = ci->tag & ~(tag);
 }
 
 halfword tex_char_tag_from_font(halfword f, halfword c)
 {
- // return charinfo_tag(tex_aux_char_info(f, c)->tagrem);
     return tex_aux_char_info(f, c)->tag;
 }
 
 int tex_char_checked_tag(halfword tag)
 { 
-    return tag & (extend_last_tag | italic_tag | n_ary_tag | radical_tag | punctuation_tag);
+    return tag & (horizontal_tag | vertical_tag | extend_last_tag | italic_tag | n_ary_tag | radical_tag | punctuation_tag);
 }
 
 halfword tex_char_next_from_font(halfword f, halfword c)
 {
-    return tex_aux_char_info(f, c)->next;
+    charinfo *ci = tex_aux_char_info(f, c);
+    return ci->math ? ci->math->next : -1;
 }
 
 halfword tex_char_extensible_italic_from_font(halfword f, halfword c)
@@ -1865,12 +1828,6 @@ scaled tex_char_bottom_overshoot_from_font(halfword f, halfword c)
 {
     charinfo *ci = tex_aux_char_info(f, c);
     return ci->math ? ci->math->bottom_overshoot : 0;
-}
-
-int tex_char_inner_location_from_font(halfword f, halfword c)
-{
-    charinfo *ci = tex_aux_char_info(f, c);
-    return ci->math ? ci->math->inner_location : inner_location_none;
 }
 
 scaled tex_char_inner_x_offset_from_font(halfword f, halfword c)

@@ -5002,6 +5002,27 @@ static int texlib_getkerneloptionvalues(lua_State *L)
     return 1;
 }
 
+static int texlib_getcharactertagvalues(lua_State *L)
+{
+    lua_createtable(L, 2, 12);
+    lua_set_string_by_index(L, no_tag,          "normal");
+    lua_set_string_by_index(L, ligatures_tag,   "ligatures");
+    lua_set_string_by_index(L, kerns_tag,       "kerns");
+    lua_set_string_by_index(L, list_tag,        "list");
+    lua_set_string_by_index(L, callback_tag,    "callback");
+    lua_set_string_by_index(L, extensible_tag,  "extensible");
+    lua_set_string_by_index(L, horizontal_tag,  "horizontal");
+    lua_set_string_by_index(L, vertical_tag,    "vertical");
+    lua_set_string_by_index(L, extend_last_tag, "extendlast");
+    lua_set_string_by_index(L, inner_left_tag,  "innerleft");
+    lua_set_string_by_index(L, inner_right_tag, "innerright");
+    lua_set_string_by_index(L, italic_tag,      "italic");
+    lua_set_string_by_index(L, n_ary_tag,       "nary");
+    lua_set_string_by_index(L, radical_tag,     "radical");
+    lua_set_string_by_index(L, punctuation_tag, "punctuation");
+    return 1;
+}
+
 static int texlib_getshapingpenaltiesvalues(lua_State *L)
 {
     lua_createtable(L, 2, 2);
@@ -5464,6 +5485,7 @@ static const struct luaL_Reg texlib_function_list[] = {
     { "getprimitiveorigins",        texlib_getprimitiveorigins        },
     { "getfrozenparvalues",         texlib_getfrozenparvalues         },
     { "getshapingpenaltiesvalues",  texlib_getshapingpenaltiesvalues  },
+    { "getcharactertagvalues",      texlib_getcharactertagvalues      }, 
     { "getkerneloptionvalues",      texlib_getkerneloptionvalues      },
     { "getspecialmathclassvalues",  texlib_getspecialmathclassvalues  },
     { "getlargestusedmark",         texlib_getlargestusedmark         },

@@ -249,6 +249,7 @@ static void fontlib_aux_font_char_from_lua(lua_State *L, halfword f, int i, int 
     if (lua_istable(L, -1)) {
         /*tex We need an intermediate veriable: */
         int target; 
+        const char *starget;
         charinfo *co = tex_get_charinfo(f, i);
         set_numeric_field_by_index(target, tag, 0);
         set_charinfo_tag(co, target ? tex_char_checked_tag(target) : 0);
@@ -274,6 +275,8 @@ static void fontlib_aux_font_char_from_lua(lua_State *L, halfword f, int i, int 
             set_charinfo_smaller(co, target);
             set_numeric_field_by_index(target, mirror, 0);
             set_charinfo_mirror(co, target);
+            set_numeric_field_by_index(target, flataccent, INT_MIN);
+            set_charinfo_flat_accent(co, target);
             /* */
             set_numeric_field_by_index(target, topleft, 0);
             set_charinfo_top_left_kern(co, target);
@@ -303,23 +306,26 @@ static void fontlib_aux_font_char_from_lua(lua_State *L, halfword f, int i, int 
             set_numeric_field_by_index(target, bottomanchor, INT_MIN);
             set_charinfo_bottom_anchor(co, target);
             /* */
-            set_numeric_field_by_index(target, innerlocation, INT_MIN);
-            if (target) { 
-                set_charinfo_inner_location(co, target);
-                set_numeric_field_by_index(target, innerxoffset, INT_MIN);
-                set_charinfo_inner_x_offset(co, target);
-                set_numeric_field_by_index(target, inneryoffset, INT_MIN);
-                set_charinfo_inner_y_offset(co, target);
-            }
-            /* */
-            set_numeric_field_by_index(target, flataccent, INT_MIN);
-            set_charinfo_flat_accent(co, target);
+            set_string_field_by_index(starget, innerlocation);
+            if (lua_key_eq(starget, left)) {
+                set_charinfo_tag(co, inner_left_tag);
+            } else if (lua_key_eq(starget, right)) {
+                set_charinfo_tag(co, inner_right_tag);
+            } 
+            set_numeric_field_by_index(target, innerxoffset, INT_MIN);
+            set_charinfo_inner_x_offset(co, target);
+            set_numeric_field_by_index(target, inneryoffset, INT_MIN);
+            set_charinfo_inner_y_offset(co, target);
             /* */
             set_numeric_field_by_index(target, next, -1);
             if (target >= 0) {
                 set_charinfo_tag(co, list_tag);
                 set_charinfo_next(co, target);
             }
+            set_boolean_field_by_index(target, extensible, 0);
+            if (target) {
+                set_charinfo_tag(co, extend_last_tag);
+            } 
             lua_push_key(parts);
             if (lua_rawget(L, -2) == LUA_TTABLE) {
                 set_charinfo_tag(co, extensible_tag);
@@ -327,14 +333,11 @@ static void fontlib_aux_font_char_from_lua(lua_State *L, halfword f, int i, int 
                 for (lua_Integer k = 1; ; k++) {
                     if (lua_rawgeti(L, -1, k) == LUA_TTABLE) {
                         int glyph, startconnect, endconnect, advance, extender;
-                     // extinfo *h;
                         set_numeric_field_by_index(glyph, glyph, 0);
                         set_numeric_field_by_index(extender, extender, 0);
                         set_numeric_field_by_index(startconnect, start, 0);
                         set_numeric_field_by_index(endconnect, end, 0);
                         set_numeric_field_by_index(advance, advance, 0);
-                     // h = tex_new_charinfo_extensible_step(glyph, startconnect, endconnect, advance, extender);
-                     // tex_add_charinfo_extensible_step(co, h);
                         tex_append_charinfo_extensible_recipe(co, glyph, startconnect, endconnect, advance, extender);
                         lua_pop(L, 1);
                     } else {
@@ -345,16 +348,12 @@ static void fontlib_aux_font_char_from_lua(lua_State *L, halfword f, int i, int 
                 lua_pop(L, 1);
                 set_numeric_field_by_index(target, partsitalic, 0);
                 set_charinfo_extensible_italic(co, target);
-                {
-                    /* We don't need these flags bnut maybe some day we can use them for tracing. */
-                    const char *starget;
-                    set_string_field_by_index(starget, name);
-                    if (lua_key_eq(starget, horizontal)) {
-                        set_charinfo_tag(co, horizontal_tag);
-                    } else if (lua_key_eq(starget, vertical)) {
-                        set_charinfo_tag(co, vertical_tag);
-                    }
-                }
+                set_string_field_by_index(starget, partsorientation);
+                if (lua_key_eq(starget, horizontal)) {
+                    set_charinfo_tag(co, horizontal_tag);
+                } else if (lua_key_eq(starget, vertical)) {
+                    set_charinfo_tag(co, vertical_tag);
+                } 
             } else {
                 lua_pop(L, 1);
             }
