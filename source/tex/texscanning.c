@@ -668,7 +668,7 @@ static int tex_aux_set_cur_val_by_some_cmd(int code)
         case math_char_class_code:
         case math_char_fam_code:
         case math_char_slot_code:
-              /* we actually need two commands or we need to look ahead */
+            /* we actually need two commands or we need to look ahead */
             {
                 mathcodeval mval = { 0, 0, 0 };
                 mathdictval dval = { 0, 0, 0 };

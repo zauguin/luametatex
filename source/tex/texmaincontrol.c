@@ -5957,7 +5957,7 @@ static void tex_aux_run_show_whatever(void)
                 int online = 0;
                 int max = 0;
                 while (1) {
-                    switch (tex_scan_character("ocdnaOCDNA", 0, 0, 0)) {
+                    switch (tex_scan_character("ocdnaOCDNA", 0, 1, 0)) {
                         case 'a': case 'A':
                             if (tex_scan_mandate_keyword("all", 1)) {
                                 max = 1;

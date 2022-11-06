@@ -525,6 +525,7 @@ void tex_load_hyphenation(struct tex_language *lang, const unsigned char *buff)
                 }
             }
         }
+        lua_pop(L, 1);
     }
 }
 
@@ -626,44 +627,6 @@ static char *tex_aux_hyphenation_exception(int exceptions, char *w)
     }
     return ret;
 }
-
-/*tex Kept as reference: */
-
-/*
-char *get_exception_strings(struct tex_language *lang)
-{
-    char *ret = NULL;
-    if (lang && lang->exceptions) {
-        lua_State *L = lua_state.lua_instance;
-        if (lua_rawgeti(L, LUA_REGISTRYINDEX, lang->exceptions) == LUA_TTABLE) {
-            size_t size = 0;
-            size_t current = 0;
-            lua_pushnil(L);
-            while (lua_next(L, -2)) {
-                size_t l = 0;
-                const char *value = lua_tolstring(L, -1, &l);
-                if (current + l + 2 > size) {
-                    size_t new = (size + size/5) + current + l + 1024;
-                    char *tmp = lmt_memory_realloc(ret, new);
-                    if (tmp) {
-                        ret = tmp;
-                        size = new;
-                    } else {
-                        overflow_error("exceptions", (int) size);
-                    }
-                }
-                if (ret) {
-                    ret[current] = ' ';
-                    strcpy(&ret[current + 1], value);
-                    current += l + 1;
-                }
-                lua_pop(L, 1);
-            }
-        }
-    }
-    return ret;
-}
-*/
 
 /*tex
 
@@ -996,8 +959,6 @@ static void tex_aux_do_exception(halfword wordstart, halfword r, char *replaceme
     disabled by setting the automatic mode to \type {1}.
 
 */
-
-// # define is_hyphen_char(chr)  (get_hc_code(chr) || chr == ex_hyphen_char_par)
 
 inline static halfword tex_aux_is_hyphen_char(halfword chr)
 {

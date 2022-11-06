@@ -460,7 +460,7 @@ extern int       tex_get_math_char    (halfword f, int c, int size, scaled *scal
 
     Not all are needed but at least we now can keep some state. We can actually use them to something
     if we really want to (like when we runt tests). However, that is a rather drastic measure for 
-    shared fonts. Tracing is another application. 
+    shared fonts. Tracing is another application and at some point it will be used for this. 
 */
 
 typedef enum char_tag_codes {

@@ -1987,11 +1987,34 @@ int tex_scan_math_cmd_val(mathcodeval *mval, mathdictval *dval)
                     return 0;
             }
             break;
-        case letter_cmd:
-        case other_char_cmd:
-            mval->character_value = cur_chr;
+        case delimiter_number_cmd:
+            switch (cur_chr) {
+                case math_delimiter_code:
+                    *mval = tex_scan_delimiter_as_mathchar(tex_mathcode);
+                    break;
+                case math_udelimiter_code:
+                    *mval = tex_scan_delimiter_as_mathchar(umath_mathcode);
+                    break;
+                default:
+                    /* no message yet */
+                    return 0;
+            }
             break;
+        /*tex 
+            This is/was an experiment but could work out ambigiuous in some cases so when I bring it 
+            back it will be under more strict control. So, for instance a register would make us 
+            enter the default branch but a direct number the other case. In the meantiem we no longer 
+            use the direct char approach (for delimiters mostly) so we can comment it. 
+        */
+      // case letter_cmd: 
+      // case other_char_cmd: 
+      //     mval->character_value = cur_chr; 
+      //     break; 
         default:
+            /*tex
+                We could do a fast |tex_scan_something_internal| here but this branch is not that 
+                critical. 
+            */     
             {
                 halfword n = 0;
                 tex_back_input(cur_tok);
@@ -2729,7 +2752,7 @@ void tex_run_math_accent(void)
         case math_uaccent_code:
             /*tex |\Umathaccent| */
             while (1) {
-                switch (tex_scan_character("ansfASFN", 0, 0, 0)) {
+                switch (tex_scan_character("ansfASFN", 0, 1, 0)) {
                     case 'a': case 'A':
                         if (tex_scan_mandate_keyword("attr", 1)) {
                             attrlist = tex_scan_attribute(attrlist);
