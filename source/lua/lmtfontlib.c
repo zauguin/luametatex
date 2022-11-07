@@ -265,6 +265,8 @@ static void fontlib_aux_font_char_from_lua(lua_State *L, halfword f, int i, int 
         set_charinfo_italic(co, target);
         set_numeric_field_by_index(target, expansion, 1000);
         set_charinfo_expansion(co, target);
+        set_numeric_field_by_index(target, compression, target);
+        set_charinfo_compression(co, target);
         set_numeric_field_by_index(target, leftprotrusion, 0);
         set_charinfo_leftprotrusion(co, target);
         set_numeric_field_by_index(target, rightprotrusion, 0);

@@ -422,11 +422,11 @@ scaled tex_char_stretch(halfword p) /* todo: move this to texfont.c and make it 
         halfword m = font_max_stretch(f);
         if (m > 0) {
             halfword c = glyph_character(p);
-            halfword ef = tex_char_ef_from_font(f, c);
-            if (ef > 0) {
+            scaled e = tex_char_ef_from_font(f, c);
+            if (e > 0) {
                 scaled dw = tex_calculated_glyph_width(p, m) - tex_char_width_from_glyph(p);
                 if (dw > 0) {
-                    return tex_round_xn_over_d(dw, ef, 1000);
+                    return tex_round_xn_over_d(dw, e, 1000);
                 }
             }
         }
@@ -441,11 +441,11 @@ scaled tex_char_shrink(halfword p) /* todo: move this to texfont.c and make it m
         halfword m = font_max_shrink(f);
         if (m > 0) {
             halfword c = glyph_character(p);
-            halfword ef = tex_char_ef_from_font(f, c);
-            if (ef > 0) {
+            scaled e = tex_char_cf_from_font(f, c);
+            if (e > 0) {
                 scaled dw = tex_char_width_from_glyph(p) - tex_calculated_glyph_width(p, -m);
                 if (dw > 0) {
-                    return tex_round_xn_over_d(dw, ef, 1000);
+                    return tex_round_xn_over_d(dw, e, 1000);
                 }
             }
         }
@@ -482,7 +482,7 @@ scaled tex_kern_shrink(halfword p)
         if (l && node_type(l) == glyph_node && ! tex_has_glyph_option(l, glyph_option_no_expansion)) {
             halfword m = font_max_shrink(glyph_font(l));
             if (m > 0) {
-                halfword e = tex_char_ef_from_font(glyph_font(l), glyph_character(l));
+                scaled e = tex_char_cf_from_font(glyph_font(l), glyph_character(l));
                 if (e > 0) {
                     scaled dw = tex_round_xn_over_d(w, 1000 - m, 1000) - w;
                     if (dw > 0) {
@@ -503,20 +503,23 @@ static void tex_aux_set_kern_expansion(halfword p, halfword ex_ratio)
         if (l && node_type(l) == glyph_node && ! tex_has_glyph_option(l, glyph_option_no_expansion)) {
             halfword f = glyph_font(l);
             halfword c = glyph_character(l);
-            halfword ef = tex_char_ef_from_font(f, c);
-            if (ef == 0) {
-                return;
-            } else if (ex_ratio > 0) {
-                halfword m = font_max_stretch(f);
-                if (m > 0) {
-                    halfword ex_stretch = tex_ext_xn_over_d(ex_ratio * ef, m, 1000000);
-                    kern_expansion(p) = tex_fix_expand_value(f, ex_stretch) * 1000;
+            if (ex_ratio > 0) {
+                scaled e = tex_char_ef_from_font(f, c);
+                if (e > 0) { 
+                    halfword m = font_max_stretch(f);
+                    if (m > 0) {
+                        e = tex_ext_xn_over_d(ex_ratio * e, m, 1000000);
+                        kern_expansion(p) = tex_fix_expand_value(f, e) * 1000;
+                    }
                 }
             } else if (ex_ratio < 0) {
-                halfword m = font_max_shrink(f);
-                if (m > 0) {
-                    halfword ex_shrink = tex_ext_xn_over_d(ex_ratio * ef, m, 1000000);
-                    kern_expansion(p) = tex_fix_expand_value(f, ex_shrink) * 1000;
+                scaled e = tex_char_cf_from_font(f, c);
+                if (e > 0) { 
+                    halfword m = font_max_shrink(f);
+                    if (m > 0) {
+                        e = tex_ext_xn_over_d(ex_ratio * e, m, 1000000);
+                        kern_expansion(p) = tex_fix_expand_value(f, e) * 1000;
+                    }
                 }
             }
         }
@@ -528,22 +531,27 @@ static void tex_aux_set_glyph_expansion(halfword p, int ex_ratio)
     switch (node_type(p)) {
         case glyph_node:
             if (! tex_has_glyph_option(p, glyph_option_no_expansion)) {
-                halfword f = glyph_font(p);
-                halfword c = glyph_character(p);
-                halfword ef = tex_char_ef_from_font(f, c);
-                if (ef == 0) {
-                    return;
-                } else if (ex_ratio > 0) {
-                    halfword m = font_max_stretch(f);
-                    if (m > 0) {
-                        halfword ex_stretch = tex_ext_xn_over_d(ex_ratio * ef, m, 1000000);
-                        glyph_expansion(p) = tex_fix_expand_value(f, ex_stretch) * 1000;
+                if (ex_ratio > 0) {
+                    halfword f = glyph_font(p);
+                    halfword c = glyph_character(p);
+                    scaled e = tex_char_ef_from_font(f, c);
+                    if (e > 0) { 
+                        halfword m = font_max_stretch(f);
+                        if (m > 0) {
+                            e = tex_ext_xn_over_d(ex_ratio * e, m, 1000000);
+                            glyph_expansion(p) = tex_fix_expand_value(f, e) * 1000;
+                        }
                     }
                 } else if (ex_ratio < 0) {
-                    halfword m = font_max_shrink(f);
-                    if (m > 0) {
-                        halfword ex_shrink = tex_ext_xn_over_d(ex_ratio * ef, m, 1000000);
-                        glyph_expansion(p) = tex_fix_expand_value(f, ex_shrink) * 1000;
+                    halfword f = glyph_font(p);
+                    halfword c = glyph_character(p);
+                    scaled e = tex_char_cf_from_font(f, c);
+                    if (e > 0) { 
+                        halfword m = font_max_shrink(f);
+                        if (m > 0) {
+                            e = tex_ext_xn_over_d(ex_ratio * e, m, 1000000);
+                            glyph_expansion(p) = tex_fix_expand_value(f, e) * 1000;
+                        }
                     }
                 }
             }

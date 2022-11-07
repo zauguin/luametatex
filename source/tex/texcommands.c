@@ -744,6 +744,7 @@ void tex_initialize_commands(void)
         tex_primitive(tex_command,    "hyphenchar",                     set_font_property_cmd,  font_hyphen_code,                         0);
         tex_primitive(tex_command,    "skewchar",                       set_font_property_cmd,  font_skew_code,                           0);
         tex_primitive(luatex_command, "efcode",                         set_font_property_cmd,  font_ef_code,                             0);
+        tex_primitive(luatex_command, "cfcode",                         set_font_property_cmd,  font_cf_code,                             0);
         tex_primitive(luatex_command, "lpcode",                         set_font_property_cmd,  font_lp_code,                             0);
         tex_primitive(luatex_command, "rpcode",                         set_font_property_cmd,  font_rp_code,                             0);
         tex_primitive(tex_command,    "fontdimen",                      set_font_property_cmd,  font_dimen_code,                          0);

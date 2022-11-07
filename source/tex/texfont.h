@@ -156,7 +156,8 @@ typedef struct charinfo {
         consumption to usage (of course allocated blobs also have overhead).  
 
     */
-    scaled        expansion;         
+    scaled        expansion;    
+    scaled        compression;
     scaled        leftprotrusion;
     scaled        rightprotrusion;
     /*tex
@@ -166,11 +167,9 @@ typedef struct charinfo {
         next) fits in 21 bits. So we had |tagrem| for quite a while. 
 
         But we now use a 32 bit tag field and use proper next field because we need to padd this 
-        struct anyway. The next field can move to the math blob. The next fiels is now in the math 
-        blob where it belongs but it can move here again when we need an extra slot there. 
+        struct anyway. The next field has been moved to the math blob.
     */
     halfword      tag; 
-    halfword      padding; 
     /*tex
         Traditional \TEX\ fonts use these two lists for ligature building and inter-character
         kerning and these are now optional (via pointers). By also using an indirect structure for
@@ -491,6 +490,7 @@ typedef enum char_tag_codes {
 # define set_charinfo_depth(ci,val)                        ci->depth  = val;
 # define set_charinfo_italic(ci,val)                       ci->italic = val;
 # define set_charinfo_expansion(ci,val)                    ci->expansion = val;
+# define set_charinfo_compression(ci,val)                  ci->compression = val;
 # define set_charinfo_leftprotrusion(ci,val)               ci->leftprotrusion = val;
 # define set_charinfo_rightprotrusion(ci,val)              ci->rightprotrusion = val;
 
@@ -542,13 +542,12 @@ typedef enum char_tag_codes {
 void             tex_set_lpcode_in_font                 (halfword f, halfword c, halfword i);
 void             tex_set_rpcode_in_font                 (halfword f, halfword c, halfword i);
 void             tex_set_efcode_in_font                 (halfword f, halfword c, halfword i);
+void             tex_set_cfcode_in_font                 (halfword f, halfword c, halfword i);
 
 extern void      tex_add_charinfo_math_kern             (charinfo *ci, int type, scaled ht, scaled krn);
 extern int       tex_get_charinfo_math_kerns            (charinfo *ci, int id);
 extern void      tex_set_charinfo_extensible_recipe     (charinfo *ci, extinfo *ext);
 extern void      tex_append_charinfo_extensible_recipe  (charinfo *ci, int glyph, int startconnect, int endconnect, int advance, int repeater);
-/*     void      tex_add_charinfo_extensible_step       (charinfo *ci, extinfo *ext); */
-/*     extinfo  *tex_new_charinfo_extensible_step       (int glyph, int startconnect, int endconnect, int advance, int repeater); */
 
 /*tex Checkers: */
 
@@ -570,6 +569,7 @@ extern scaled    tex_char_total_from_font               (halfword f, halfword c)
 extern scaledwhd tex_char_whd_from_font                 (halfword f, halfword c); /* math + maincontrol */
 extern scaled    tex_char_italic_from_font              (halfword f, halfword c); /* math + maincontrol */
 extern scaled    tex_char_ef_from_font                  (halfword f, halfword c); /* packaging + maincontrol */
+extern scaled    tex_char_cf_from_font                  (halfword f, halfword c); /* packaging + maincontrol */
 extern scaled    tex_char_lp_from_font                  (halfword f, halfword c); /* packaging + maincontrol */
 extern scaled    tex_char_rp_from_font                  (halfword f, halfword c); /* packaging + maincontrol */
 extern halfword  tex_char_tag_from_font                 (halfword f, halfword c); /* math */

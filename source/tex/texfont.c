@@ -1691,6 +1691,11 @@ scaled tex_char_ef_from_font(halfword f, halfword c)
     return tex_aux_char_info(f, c)->expansion;
 }
 
+scaled tex_char_cf_from_font(halfword f, halfword c)
+{
+    return tex_aux_char_info(f, c)->compression;
+}
+
 scaled tex_char_lp_from_font(halfword f, halfword c)
 {
     return tex_aux_char_info(f, c)->leftprotrusion;
@@ -1964,6 +1969,13 @@ void tex_set_efcode_in_font(halfword f, halfword c, halfword i) {
     charinfo *ci = tex_aux_char_info(f, c);
     if (ci) {
         ci->expansion = i;
+    }
+}
+
+void tex_set_cfcode_in_font(halfword f, halfword c, halfword i) {
+    charinfo *ci = tex_aux_char_info(f, c);
+    if (ci) {
+        ci->compression = i;
     }
 }
 

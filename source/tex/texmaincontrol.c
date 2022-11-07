@@ -4352,6 +4352,14 @@ static void tex_aux_set_font_property(void)
                 tex_set_efcode_in_font(fnt, chr, val);
                 break;
             }
+        case font_cf_code:
+            {
+                halfword fnt = tex_scan_font_identifier(NULL);
+                halfword chr = tex_scan_char_number(0);
+                halfword val = tex_scan_int(1, NULL);
+                tex_set_cfcode_in_font(fnt, chr, val);
+                break;
+            }
         case font_dimen_code:
             {
                 tex_set_font_dimen();

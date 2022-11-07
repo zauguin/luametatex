@@ -535,6 +535,7 @@ make_lua_key(L, command);\
 make_lua_key(L, comment);\
 make_lua_key(L, compactmath);\
 make_lua_key(L, compound);\
+make_lua_key(L, compression);\
 make_lua_key(L, condition);\
 make_lua_key(L, conditional);\
 make_lua_key(L, conditionalmathskip);\

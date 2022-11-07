@@ -1594,6 +1594,14 @@ static halfword tex_aux_scan_something_internal(halfword cmd, halfword chr, int 
                             cur_val_level = int_val_level;
                             break;
                         }
+                    case font_cf_code:
+                        {
+                            halfword fnt = tex_scan_font_identifier(NULL);
+                            halfword chr = tex_scan_char_number(0);
+                            cur_val = tex_char_cf_from_font(fnt, chr);
+                            cur_val_level = int_val_level;
+                            break;
+                        }
                     case font_dimen_code:
                         {
                             cur_val = tex_get_font_dimen();

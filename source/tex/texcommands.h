@@ -581,6 +581,7 @@ typedef enum font_property_codes {
     font_lp_code,
     font_rp_code,
     font_ef_code,
+    font_cf_code,
     font_dimen_code,
     scaled_font_dimen_code,
 } font_property_codes;
