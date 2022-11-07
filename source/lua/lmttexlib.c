@@ -1402,9 +1402,9 @@ static halfword texlib_aux_make_glue(lua_State *L, int top, int slot)
             if (slot <= top) {
                 glue_shrink(value) = lmt_toroundnumber(L, slot++);
                 if (slot <= top) {
-                    glue_stretch_order(value) = lmt_tohalfword(L, slot++);
+                    glue_stretch_order(value) = tex_checked_glue_order(lmt_tohalfword(L, slot++));
                     if (slot <= top) {
-                        glue_shrink_order(value) = lmt_tohalfword(L, slot++);
+                        glue_shrink_order(value) = tex_checked_glue_order(lmt_tohalfword(L, slot++));
                     }
                 }
             }
@@ -2466,9 +2466,9 @@ static int texlib_set_item(lua_State* L, int index, int prefixes)
                                     if (slot <= top) {
                                         glue_shrink(value) = lmt_toroundnumber(L, slot++);
                                         if (slot <= top) {
-                                            glue_stretch_order(value) = lmt_tohalfword(L, slot++);
+                                            glue_stretch_order(value) = tex_checked_glue_order(lmt_tohalfword(L, slot++));
                                             if (slot <= top) {
-                                                glue_shrink_order(value) = lmt_tohalfword(L, slot);
+                                                glue_shrink_order(value) = tex_checked_glue_order(lmt_tohalfword(L, slot));
                                             }
                                         }
                                     }
@@ -2877,8 +2877,8 @@ static int texlib_setmath(lua_State *L)
                         glue_amount(p) = lmt_optroundnumber(L, slot++, 0);
                         glue_stretch(p) = lmt_optroundnumber(L, slot++, 0);
                         glue_shrink(p) = lmt_optroundnumber(L, slot++, 0);
-                        glue_stretch_order(p) = lmt_optroundnumber(L, slot++, 0);
-                        glue_shrink_order(p) = lmt_optroundnumber(L, slot, 0);
+                        glue_stretch_order(p) = tex_checked_glue_order(lmt_optroundnumber(L, slot++, 0));
+                        glue_shrink_order(p) = tex_checked_glue_order(lmt_optroundnumber(L, slot, 0));
                         tex_def_math_parameter(style, param, (scaled) p, level, indirect_math_regular);
                         break;
                     }

@@ -151,10 +151,9 @@ typedef struct charinfo {
         \PDFTEX\ engine. Handling of protrusion and expansion is the only features that we inherit
         from this important extension to traditional \TEX. 
 
-        We can make the next three into a a pointer which saves on large fonts and only a subset 
+        We can make the next four into a a pointer which saves on large fonts and only a subset 
         of characters has protrusion or expansion, if used at all. That way we delegate some memory 
         consumption to usage (of course allocated blobs also have overhead).  
-
     */
     scaled        expansion;    
     scaled        compression;
@@ -166,8 +165,8 @@ typedef struct charinfo {
         in an integer: 2 bits is enough for the tag (but we get some more) and the remainder (aka 
         next) fits in 21 bits. So we had |tagrem| for quite a while. 
 
-        But we now use a 32 bit tag field and use proper next field because we need to padd this 
-        struct anyway. The next field has been moved to the math blob.
+        But we now use a 32 bit tag field and use proper next field that has been moved to the math 
+        blob so that we can have a compression field here without padding. 
     */
     halfword      tag; 
     /*tex

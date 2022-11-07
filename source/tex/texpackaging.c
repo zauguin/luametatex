@@ -1134,11 +1134,11 @@ halfword tex_hpack(halfword p, scaled w, int m, singleword pack_direction, int r
                                     break;
                                 }
                             case packing_substitute:
-                                {
-                                    lmt_packaging_state.previous_char_ptr = p;
+                                lmt_packaging_state.previous_char_ptr = p;
+                                if (lmt_packaging_state.font_expansion_ratio != 0) {
                                     tex_aux_set_glyph_expansion(p, lmt_packaging_state.font_expansion_ratio);
-                                    break;
                                 }
+                                break;
                         }
                     }
                     whd = tex_glyph_dimensions_ex(p);
@@ -1264,10 +1264,10 @@ halfword tex_hpack(halfword p, scaled w, int m, singleword pack_direction, int r
                                 break;
                             }
                         case packing_substitute:
-                            {
+                            if (lmt_packaging_state.font_expansion_ratio != 0) {
                                 tex_aux_set_kern_expansion(p, lmt_packaging_state.font_expansion_ratio);
-                                break;
                             }
+                            break;
                     }
                 }
                 x += tex_kern_dimension_ex(p);
@@ -1282,7 +1282,9 @@ halfword tex_hpack(halfword p, scaled w, int m, singleword pack_direction, int r
                             */
                             break;
                         case packing_substitute:
-                            tex_aux_set_glyph_expansion(p, lmt_packaging_state.font_expansion_ratio);
+                            if (lmt_packaging_state.font_expansion_ratio != 0) {
+                                tex_aux_set_glyph_expansion(p, lmt_packaging_state.font_expansion_ratio);
+                            }
                             break;
                     }
                 }

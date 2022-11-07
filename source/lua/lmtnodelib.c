@@ -5379,8 +5379,8 @@ static int nodelib_direct_setglue(lua_State *L)
             case vlist_node:
             case unset_node:
                 box_glue_set(n)   = ((top > 1 && lua_type(L, 2) == LUA_TNUMBER)) ? (glueratio) lua_tonumber(L, 2)  : 0;
-                box_glue_order(n) = tex_checked_glue_sign((top > 2 && lua_type(L, 3) == LUA_TNUMBER) ? (halfword)  lua_tointeger(L, 3) : 0);
-                box_glue_sign(n)  = tex_checked_glue_order((top > 3 && lua_type(L, 4) == LUA_TNUMBER) ? (halfword)  lua_tointeger(L, 4) : 0);
+                box_glue_order(n) = tex_checked_glue_order((top > 2 && lua_type(L, 3) == LUA_TNUMBER) ? (halfword)  lua_tointeger(L, 3) : 0);
+                box_glue_sign(n)  = tex_checked_glue_sign((top > 3 && lua_type(L, 4) == LUA_TNUMBER) ? (halfword)  lua_tointeger(L, 4) : 0);
                 break;
             case math_node:
                 math_amount(n)        = ((top > 1 && lua_type(L, 2) == LUA_TNUMBER)) ? (halfword) lmt_roundnumber(L, 2) : 0;
@@ -7117,9 +7117,9 @@ static int nodelib_common_setfield(lua_State *L, int direct, halfword n)
                             } else if (lua_key_eq(s, shrink)) {
                                 glue_shrink(n) = (halfword) lmt_roundnumber(L, 3);
                             } else if (lua_key_eq(s, stretchorder)) {
-                                glue_stretch_order(n) = lmt_tohalfword(L, 3);
+                                glue_stretch_order(n) = tex_checked_glue_order(lmt_tohalfword(L, 3));
                             } else if (lua_key_eq(s, shrinkorder)) {
-                                glue_shrink_order(n) = lmt_tohalfword(L, 3);
+                                glue_shrink_order(n) = tex_checked_glue_order(lmt_tohalfword(L, 3));
                             } else if (lua_key_eq(s, leader)) {
                                 glue_leader_ptr(n) = nodelib_direct_or_node_from_index(L, direct, 3);
                             } else if (lua_key_eq(s, font)) {
@@ -7265,9 +7265,9 @@ static int nodelib_common_setfield(lua_State *L, int direct, halfword n)
                             } else if (lua_key_eq(s, shrink)) {
                                 math_shrink(n) = (halfword) lmt_roundnumber(L, 3);
                             } else if (lua_key_eq(s, stretchorder)) {
-                                math_stretch_order(n) = lmt_tohalfword(L, 3);
+                                math_stretch_order(n) = tex_checked_glue_order(lmt_tohalfword(L, 3));
                             } else if (lua_key_eq(s, shrinkorder)) {
-                                math_shrink_order(n) = lmt_tohalfword(L, 3);
+                                math_shrink_order(n) = tex_checked_glue_order(lmt_tohalfword(L, 3));
                             } else if (lua_key_eq(s, penalty)) {
                                 math_penalty(n) = lmt_tohalfword(L, 3);
                             } else {
@@ -7522,9 +7522,9 @@ static int nodelib_common_setfield(lua_State *L, int direct, halfword n)
                             } else if (lua_key_eq(s, shrink)) {
                                 glue_shrink(n) = (halfword) lmt_roundnumber(L, 3);
                             } else if (lua_key_eq(s, stretchorder)) {
-                                glue_stretch_order(n) = lmt_tohalfword(L, 3);
+                                glue_stretch_order(n) = tex_checked_glue_order(lmt_tohalfword(L, 3));
                             } else if (lua_key_eq(s, shrinkorder)) {
-                                glue_shrink_order(n) = lmt_tohalfword(L, 3);
+                                glue_shrink_order(n) = tex_checked_glue_order(lmt_tohalfword(L, 3));
                             } else {
                                 goto CANTSET;
                             }
