@@ -4584,7 +4584,7 @@ static const char *bit_expression_names[] = {
     variant that only uses doubles: |dimenexpression| and |numberexpression|. 
 */
 
-# define factor 1000 
+# define factor 1 // 256, 1000 : wrong results so needs a fix 
 
 typedef struct stack_info {
     halfword head;
@@ -5073,6 +5073,8 @@ static void tex_aux_trace_expression(stack_info stack, halfword level, halfword 
     tex_print_char(']');
     tex_end_diagnostic();
 }
+
+/* This one is not yet okay ... work in progress. */
 
 static void tex_aux_scan_expression(int level)
 {
