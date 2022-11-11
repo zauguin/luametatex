@@ -1892,7 +1892,7 @@ static int nodelib_direct_getdisc(lua_State *L)
                     if (lua_isboolean(L, 2) && lua_toboolean(L, 2)) {
                         nodelib_push_direct_or_nil(L, tex_tail_of_node_list(choice_pre_break(n)));
                         nodelib_push_direct_or_nil(L, tex_tail_of_node_list(choice_post_break(n)));
-                        nodelib_push_direct_or_nil(L, tex_tail_of_node_list(choice_post_break(n)));
+                        nodelib_push_direct_or_nil(L, tex_tail_of_node_list(choice_no_break(n)));
                         return 6;
                     } else {
                         return 3;

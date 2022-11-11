@@ -1293,7 +1293,6 @@ static halfword tex_aux_handle_ligature_word(halfword cur)
     return cur;
 }
 
-
 /*tex The return value is the new tail, head should be a dummy: */
 
 halfword tex_handle_ligaturing(halfword head, halfword tail)
