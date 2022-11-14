@@ -1085,11 +1085,6 @@ static halfword tex_aux_handle_ligature_nesting(halfword root, halfword cur)
     have (any kind of) discretionaries. It is still on my agenda to look into nested discretionaries
     i.e. discs nodes in disc fields but it might never result in useable code.
 
-    Remark: there is now a patch for \LUATEX\ that fixes some long pending issue with select discs but
-    still it's kind of fuzzy. It also complicates the par builder in a way that I don't really want
-    (at least in \CONTEXT). It was anyway a good reason for removing traces of these special disc nodes
-    in \LUAMETATEX.
-
 */
 
 static halfword tex_aux_handle_ligature_word(halfword cur)
