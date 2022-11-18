@@ -96,7 +96,7 @@ static int fontlib_aux_count_hash_items(lua_State *L)
 /*tex
 
     Font parameters can be set by number or by name. There are seven basic \TEX\ parameters in text
-    mode but in  math mode there can be numerous.
+    mode but in math mode there can be numerous.
 
 */
 
