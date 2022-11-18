@@ -1363,12 +1363,12 @@ static int nodelib_direct_getanchors(lua_State *L)
                     lua_pushnil(L);
                 }
                 /* bonus detail: source, target */
-                if (box_source_anchor(n)) {
+                if (box_anchor(n)) {
                     lua_pushinteger(L,  box_anchor(n)        & 0x0FFF);
                 } else {
                     lua_pushnil(L);
                 }
-                if (box_target_anchor(n)) {
+                if (box_anchor(n)) {
                     lua_pushinteger(L, (box_anchor(n) >> 16) & 0x0FFF);
                 } else {
                     lua_pushnil(L);
