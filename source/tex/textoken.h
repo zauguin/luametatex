@@ -417,7 +417,7 @@ inline int        tex_valid_token                 (int t) { return ((t >= 0) && 
 # define active_character_second    '\xBF'
 # define active_character_third     '\xBF'
 
-# define active_character_unknown   utf_fffd_string
+# define active_character_unknown   "\xEF\xBF\xBD!" /* utf_fffd_string */
 
 # define active_cs_value(A) aux_str2uni((str_string((A))+4))
 

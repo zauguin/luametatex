@@ -1029,20 +1029,6 @@ int tex_scan_keyword_case_sensitive(const char *s)
 
 */
 
-// halfword tex_active_to_cs(int c, int force)
-// {
-//     halfword cs = -1;
-//     if (c > 0) {
-//         char utfbytes[8] = { active_character_first, active_character_second, active_character_third, 0 };
-//         aux_uni2string((char *) &utfbytes[3], c);
-//         cs = tex_string_locate(utfbytes, (size_t) utf8_size(c) + 3, force);
-//     }
-//     if (cs < 0) {
-//         cs = tex_string_locate(active_character_unknown, 4, force); /*tex Including the zero sentinel. */
-//     }
-//     return cs;
-// }
-
 halfword tex_active_to_cs_set(int c, int catcodetable)
 {
     halfword cs = -1;
@@ -1066,6 +1052,20 @@ halfword tex_active_to_cs_set(int c, int catcodetable)
     }
     return cs;
 }
+
+// halfword tex_active_to_cs(int c, int force)
+// {
+//     halfword cs = -1;
+//     if (c > 0) {
+//         char utfbytes[8] = { active_character_first, active_character_second, active_character_third, 0 };
+//         aux_uni2string((char *) &utfbytes[3], c);
+//         cs = tex_string_locate(utfbytes, (size_t) utf8_size(c) + 3, force);
+//     }
+//     if (cs < 0) {
+//         cs = tex_string_locate(active_character_unknown, 4, force); /*tex Including the zero sentinel. */
+//     }
+//     return cs;
+// }
 
 halfword tex_active_to_cs(int c, int force)
 {
