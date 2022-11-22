@@ -4891,12 +4891,14 @@ static void tex_aux_make_scripts(halfword target, halfword kernel, scaled italic
             primedata.node = tex_aux_analyze_script(noad_prime(target), &primedata);
             maxleftkern = tex_aux_math_left_kern(glyph_font(kernel), glyph_character(kernel));
          // maxrightkern = tex_aux_math_right_kern(glyph_font(kernel), glyph_character(kernel));
-            prime_up = tex_get_math_y_parameter_default(style, math_parameter_prime_shift_drop, 0);
-            shift_up = tex_get_math_y_parameter_checked(style, math_parameter_superscript_shift_drop);
-            shift_down = tex_get_math_y_parameter_checked(style, math_parameter_subscript_shift_drop);
-            break;           //  fallthrough 
+            prime_up = 0; 
+            shift_up = 0; 
+            shift_down = 0;
+            break;            
         default:
-            kernelsize.ht -= supdrop; /* new */
+            /*tex Used for optimizing accents. */
+            kernelsize.ht -= supdrop; 
+            /*tex These parameters are only applied in an assembly (and often some 0.5 .. 1.5 pt on 12pt). */
             prime_up = kernelsize.ht - tex_get_math_y_parameter_default(style, math_parameter_prime_shift_drop, 0);
             shift_up = kernelsize.ht - tex_get_math_y_parameter_checked(style, math_parameter_superscript_shift_drop);
             shift_down = kernelsize.dp + tex_get_math_y_parameter_checked(style, math_parameter_subscript_shift_drop);
@@ -6119,7 +6121,7 @@ static halfword tex_aux_unroll_noad(halfword tail, halfword l, quarterword s)
     while (l) {
         halfword n = node_next(l);
         node_next(l) = null;
-        if (node_type(l) == hlist_node && (node_subtype(l) == s) && ! box_source_anchor(l)) {
+        if (node_type(l) == hlist_node && node_subtype(l) == s && ! box_source_anchor(l)) {
             if (box_list(l)) {
                 tex_couple_nodes(tail, box_list(l));
                 tail = tex_tail_of_node_list(tail);
@@ -7052,6 +7054,9 @@ static void tex_mlist_to_hlist_finalize_list(mliststate *state)
                 } else { 
                     tex_couple_nodes(p, l);
                 }
+            } else if ((current_subtype == open_noad_subtype || current_subtype == fenced_noad_subtype) && tex_math_has_class_option(fenced_noad_subtype, unpack_class_option)) {
+                /*tex tricky as we have an open subtype for spacing now. */
+                p = tex_aux_unroll_noad(p, l, math_fence_list);
             } else if (has_noad_option_unpacklist(current) || tex_math_has_class_option(current_subtype, unpack_class_option)) {
                 /*tex So here we only unpack a math list. */
                 p = tex_aux_unroll_noad(p, l, math_list_list);

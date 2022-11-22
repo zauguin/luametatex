@@ -138,7 +138,6 @@ void tex_initialize_commands(void)
         tex_primitive(tex_command,    "exhyphenchar",                   internal_int_cmd,       ex_hyphen_char_code,                      internal_int_base);
         tex_primitive(tex_command,    "exhyphenpenalty",                internal_int_cmd,       ex_hyphen_penalty_code,                   internal_int_base);
         tex_primitive(tex_command,    "fam",                            internal_int_cmd,       family_code,                              internal_int_base);
-        tex_primitive(luatex_command, "variablefam",                    internal_int_cmd,       variable_family_code,                     internal_int_base);
         tex_primitive(tex_command,    "finalhyphendemerits",            internal_int_cmd,       final_hyphen_demerits_code,               internal_int_base);
         tex_primitive(tex_command,    "floatingpenalty",                internal_int_cmd,       floating_penalty_code,                    internal_int_base);
         tex_primitive(tex_command,    "globaldefs",                     internal_int_cmd,       global_defs_code,                         internal_int_base);
@@ -199,6 +198,7 @@ void tex_initialize_commands(void)
         tex_primitive(luatex_command, "tracingfullboxes",               internal_int_cmd,       tracing_full_boxes_code,                  internal_int_base);
         tex_primitive(luatex_command, "tracingpenalties",               internal_int_cmd,       tracing_penalties_code,                   internal_int_base);
         tex_primitive(tex_command,    "uchyph",                         internal_int_cmd,       uc_hyph_code,                             internal_int_base); /* obsolete */
+        tex_primitive(luatex_command, "variablefam",                    internal_int_cmd,       variable_family_code,                     internal_int_base);
         tex_primitive(tex_command,    "vbadness",                       internal_int_cmd,       vbadness_code,                            internal_int_base);
         tex_primitive(tex_command,    "widowpenalty",                   internal_int_cmd,       widow_penalty_code,                       internal_int_base);
         tex_primitive(tex_command,    "year",                           internal_int_cmd,       year_code,                                internal_int_base);
@@ -759,6 +759,7 @@ void tex_initialize_commands(void)
         tex_primitive(tex_command,    "sfcode",                         define_char_code_cmd,   sfcode_charcode,                          0);
         tex_primitive(luatex_command, "hccode",                         define_char_code_cmd,   hccode_charcode,                          0);
         tex_primitive(luatex_command, "hmcode",                         define_char_code_cmd,   hmcode_charcode,                          0);
+        tex_primitive(luatex_command, "amcode",                         define_char_code_cmd,   amcode_charcode,                          0);
         tex_primitive(tex_command,    "mathcode",                       define_char_code_cmd,   mathcode_charcode,                        0);
         tex_primitive(tex_command,    "delcode",                        define_char_code_cmd,   delcode_charcode,                         0);
 
@@ -835,6 +836,7 @@ void tex_initialize_commands(void)
         tex_primitive(tex_command,    "futurelet",                      let_cmd,                future_let_code,                          0);
         tex_primitive(luatex_command, "futuredef",                      let_cmd,                future_def_code,                          0);
         tex_primitive(luatex_command, "letcharcode",                    let_cmd,                let_charcode_code,                        0);
+        tex_primitive(luatex_command, "lettextcode",                    let_cmd,                let_textcode_code,                        0);
         tex_primitive(luatex_command, "swapcsvalues",                   let_cmd,                swap_cs_values_code,                      0);
         tex_primitive(luatex_command, "letprotected",                   let_cmd,                let_protected_code,                       0);
         tex_primitive(luatex_command, "unletprotected",                 let_cmd,                unlet_protected_code,                     0);

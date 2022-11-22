@@ -251,7 +251,7 @@ void tex_expand_current_token(void)
                             case expand_token_code:
                                 {
                                     /* we can share code with lmtokenlib .. todo */
-                                    halfword cat = tex_scan_category_code();
+                                    halfword cat = tex_scan_category_code(0);
                                     halfword chr = tex_scan_char_number(0);
                                     /* too fragile: 
                                         halfword tok = null;

@@ -1029,17 +1029,70 @@ int tex_scan_keyword_case_sensitive(const char *s)
 
 */
 
+// halfword tex_active_to_cs(int c, int force)
+// {
+//     halfword cs = -1;
+//     if (c > 0) {
+//         char utfbytes[8] = { active_character_first, active_character_second, active_character_third, 0 };
+//         aux_uni2string((char *) &utfbytes[3], c);
+//         cs = tex_string_locate(utfbytes, (size_t) utf8_size(c) + 3, force);
+//     }
+//     if (cs < 0) {
+//         cs = tex_string_locate(active_character_unknown, 4, force); /*tex Including the zero sentinel. */
+//     }
+//     return cs;
+// }
+
+halfword tex_active_to_cs_set(int c, int catcodetable)
+{
+    halfword cs = -1;
+    if (c > 0) {
+        char utfbytes[10] = { 
+            active_character_first, active_character_second, active_character_third, 
+            0xFF, // catcodetable slot 
+            0 
+        };
+        if (catcodetable >= 0) { 
+            catcodetable += 1;
+            if (catcodetable > 0 && catcodetable <= 0xFF) {
+                utfbytes[3] = (unsigned char) catcodetable ;
+            }
+        }
+        aux_uni2string((char *) &utfbytes[4], c);
+        cs = tex_string_locate(utfbytes, (size_t) utf8_size(c) + 4, 1);
+    }
+    if (cs < 0) {
+        cs = tex_string_locate(active_character_unknown, 4, 1); /*tex Including the zero sentinel. */
+    }
+    return cs;
+}
+
 halfword tex_active_to_cs(int c, int force)
 {
     halfword cs = -1;
     if (c > 0) {
-        /*tex This is not that efficient: we can make a helper that doesn't use an alloc. */
-        char utfbytes[8] = { '\xEF', '\xBF', '\xBF', 0 };
-        aux_uni2string((char *) &utfbytes[3], c);
-        cs = tex_string_locate(utfbytes, (size_t) utf8_size(c) + 3, force);
+        char utfbytes[10] = { 
+            active_character_first, active_character_second, active_character_third, 
+            0xFF, // mode slot 
+            0xFF, // catcodetable slot 
+            0 
+        };
+        halfword p = cat_code_table_par + 1;
+        if (p > 0 && p <= 0xFF) {
+            utfbytes[3] = (unsigned char) p;
+        }
+        aux_uni2string((char *) &utfbytes[4], c);
+        cs = tex_string_locate(utfbytes, (size_t) utf8_size(c) + 4, 0); // force);
+        if (cs != undefined_control_sequence && cs >= 0) { 
+            return cs; 
+        } else { 
+            utfbytes[3] = 0xFF;
+        }
+        aux_uni2string((char *) &utfbytes[4], c);
+        cs = tex_string_locate(utfbytes, (size_t) utf8_size(c) + 4, force);
     }
     if (cs < 0) {
-        cs = tex_string_locate("\xEF\xBF\xBF", 4, force); /*tex Including the zero sentinel. */
+        cs = tex_string_locate(active_character_unknown, 4, force); /*tex Including the zero sentinel. */
     }
     return cs;
 }
@@ -1195,11 +1248,15 @@ static int tex_aux_get_next_file(void)
             case mid_line_state    + active_char_cmd:
             case new_line_state    + active_char_cmd:
             case skip_blanks_state + active_char_cmd:
-                /*tex Process an active-character.  */
-                cur_cs = tex_active_to_cs(cur_chr, ! lmt_hash_state.no_new_cs);
-                cur_cmd = eq_type(cur_cs);
-                cur_chr = eq_value(cur_cs);
-                lmt_input_state.cur_input.state = mid_line_state;
+                /*tex Process an active-character. */
+                if (cur_mode == mmode && tex_check_active_math_char(cur_chr)) {
+                    /*tex We have an intercept. */
+                } else { 
+                    cur_cs = tex_active_to_cs(cur_chr, ! lmt_hash_state.no_new_cs);
+                    cur_cmd = eq_type(cur_cs);
+                    cur_chr = eq_value(cur_cs);
+                    lmt_input_state.cur_input.state = mid_line_state;
+                }
                 break;
             case mid_line_state    + superscript_cmd:
             case new_line_state    + superscript_cmd:

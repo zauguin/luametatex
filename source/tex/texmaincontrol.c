@@ -4495,11 +4495,13 @@ static void tex_aux_set_let(int a, int force)
             }
             break;
         case let_charcode_code:
+        case let_textcode_code:
             /*tex |\letcharcode| (todo: protection) */
             {
-                halfword v = tex_scan_int(0, NULL);
-                if (v > 0) {
-                    p = tex_active_to_cs(v, 1);
+                halfword catcodetable = code == let_textcode_code ? tex_scan_int(0, NULL) : -1; 
+                halfword character = tex_scan_int(0, NULL);
+                if (character > 0) {
+                    p = tex_active_to_cs_set(character, catcodetable);
                     do {
                         tex_get_token();
                     } while (cur_cmd == spacer_cmd);
@@ -4771,6 +4773,13 @@ static void tex_aux_set_define_char_code(int a) /* maybe make |a| already a bool
                 halfword chr = tex_scan_char_number(0);
                 halfword val = tex_scan_math_discretionary_number(1);
                 tex_set_hm_code(chr, val, global_or_local(a));
+            }
+            break;
+        case amcode_charcode:
+            {
+                halfword chr = tex_scan_char_number(0);
+                halfword val = tex_scan_category_code(1);
+                tex_set_am_code(chr, val, global_or_local(a));
             }
             break;
         case mathcode_charcode:

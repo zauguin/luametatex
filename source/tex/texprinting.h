@@ -111,6 +111,5 @@ inline static int tex_is_active_cs(strnumber s)
         return 0;
     }
 }
-# define active_cs_value(A) aux_str2uni((str_string((A))+3))
 
 # endif

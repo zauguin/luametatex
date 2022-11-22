@@ -2173,7 +2173,7 @@ return 0;
 
 static int texlib_getmathcode(lua_State* L)
 {
-    mathcodeval mval = { 0, 0, 0 };
+    mathcodeval mval = tex_no_math_code();
     int ch = lmt_checkinteger(L, -1);
     if (character_in_range(ch)) {
         mval = tex_get_math_code(ch);
@@ -2192,7 +2192,7 @@ static int texlib_getmathcode(lua_State* L)
 
 static int texlib_getmathcodes(lua_State* L)
 {
-    mathcodeval mval = { 0, 0, 0 };
+    mathcodeval mval = tex_no_math_code();
     int ch = lmt_checkinteger(L, -1);
     if (character_in_range(ch)) {
         mval = tex_get_math_code(ch);

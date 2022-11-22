@@ -601,7 +601,7 @@ typedef enum int_codes {
 } int_codes;
 
 # define first_int_code pre_tolerance_code
-# define last_int_code  line_break_criterium_code
+# define last_int_code  variable_family_code
 
 typedef enum dimen_codes {
     par_indent_code,           /*tex indentation of paragraphs */
