@@ -1195,14 +1195,14 @@ static int tex_aux_get_next_file(void)
             case new_line_state    + active_char_cmd:
             case skip_blanks_state + active_char_cmd:
                 /*tex Process an active-character. */
-                if (cur_mode == mmode && tex_check_active_math_char(cur_chr)) {
+                if ((cur_mode == mmode || lmt_nest_state.math_mode) && tex_check_active_math_char(cur_chr)) {
                     /*tex We have an intercept. */
                 } else { 
                     cur_cs = tex_active_to_cs(cur_chr, ! lmt_hash_state.no_new_cs);
                     cur_cmd = eq_type(cur_cs);
                     cur_chr = eq_value(cur_cs);
-                    lmt_input_state.cur_input.state = mid_line_state;
                 }
+                lmt_input_state.cur_input.state = mid_line_state;
                 break;
             case mid_line_state    + superscript_cmd:
             case new_line_state    + superscript_cmd:

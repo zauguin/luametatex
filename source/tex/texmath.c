@@ -1246,7 +1246,9 @@ void tex_run_math_initialize(void)
     switch(cur_cmd) {
         case math_shift_cmd:
             /*tex |get_x_token| would fail on |\ifmmode|! */
+lmt_nest_state.math_mode = 1;
             tex_get_token();
+lmt_nest_state.math_mode = 0;
             if (cur_cmd == math_shift_cmd && cur_list.mode > nomode) {
                 tex_aux_enter_display_math(math_shift_cmd);
             } else {
@@ -1673,70 +1675,75 @@ static void tex_aux_report_active(int where, const char *what, int code, int cha
     tex_end_diagnostic();
 }
 
-int tex_aux_check_active_math_char(int character, int where, int *code)
-{
-    *code = tex_get_am_code(character);
-    if (*code) {
-        switch (*code) {
-            case alignment_tab_cmd:              
-            case superscript_cmd:                
-            case subscript_cmd:                  
-                cur_cmd = *code;
-                cur_chr = character;
-                cur_tok = token_val(cur_cmd, cur_chr);
-                tex_back_input(cur_tok);
-                if (tracing_commands_par >= 4) {
-                    tex_aux_report_active(where, "control", *code, character);
-                }
-                return 1;
-            case letter_cmd:                     
-            case other_char_cmd:
-                cur_cmd = *code;
-                cur_chr = character;
-                if (tracing_commands_par >= 4) {
-                    tex_aux_report_active(where, "inject", *code, character);
-                }
-                return 0;
-            default: 
-                if (tracing_commands_par >= 4) {
-                    tex_aux_report_active(where, "ignore", *code, character);
-                }
-                return 1;
-        }
-    } else { 
-        return -1;
-    }
-}
-
 static void tex_aux_append_math_char(mathcodeval mval, mathdictval dval, int automatic);
 
 int tex_check_active_math_char(int character)
 {
-    halfword code = 0;
-    halfword result = tex_aux_check_active_math_char(character, 4, &code);
-    switch (result) { 
-        case 0: 
-            /* control characters injected */
-            return 1;
-        case 1: 
-            /* regular character */
-            { 
-                mathcodeval mval = tex_get_math_code(character);
-                tex_aux_append_math_char(mval, tex_no_dict_code(), 0);
-                return 0;
-            }
-        default:
-            /* nothing intercepted */
-            return 0;
+    halfword code = tex_get_am_code(character);
+    if (code) {
+        switch (code) {
+            case alignment_tab_cmd:              
+            case superscript_cmd:                
+            case subscript_cmd:                  
+                cur_cmd = code;
+                cur_chr = character;
+                cur_tok = token_val(cur_cmd, cur_chr);
+                if (tracing_commands_par >= 4) {
+                    tex_aux_report_active(4, "control", code, character);
+                }
+                return 1;
+            case letter_cmd:                     
+            case other_char_cmd:
+                cur_cmd = code;
+                cur_chr = character;
+                cur_tok = token_val(cur_cmd, cur_chr);
+                if (tracing_commands_par >= 4) {
+                    tex_aux_report_active(4, "inject", code, character);
+                }
+                return 1;
+            default: 
+                if (tracing_commands_par >= 4) {
+                    tex_aux_report_active(4, "ignore", code, character);
+                }
+                return 1;
+        }
+    } else { 
+        return 0;
     }
 }
 
 static int tex_aux_scan_active_math_char(mathcodeval *mval, int where)
 {
-    halfword code = 0;
-    halfword result = tex_aux_check_active_math_char(mval->character_value, where, &code);
-    if (result >= 0) {
-        return result;
+    halfword character = mval->character_value;
+    halfword code = tex_get_am_code(character);
+    if (code) {
+        switch (code) {
+            case alignment_tab_cmd:              
+            case superscript_cmd:                
+            case subscript_cmd:                  
+                cur_cmd = code;
+                cur_chr = character;
+                cur_tok = token_val(cur_cmd, cur_chr);
+                tex_back_input(cur_tok);
+                if (tracing_commands_par >= 4) {
+                    tex_aux_report_active(where, "control", code, character);
+                }
+                return 1;
+            case letter_cmd:                     
+            case other_char_cmd:
+                cur_cmd = code;
+                cur_chr = character;
+                cur_tok = token_val(cur_cmd, cur_chr);
+                if (tracing_commands_par >= 4) {
+                    tex_aux_report_active(where, "inject", code, character);
+                }
+                return 0;
+            default: 
+                if (tracing_commands_par >= 4) {
+                    tex_aux_report_active(where, "ignore", code, character);
+                }
+                return 1;
+        }
     } else if (mval->class_value == active_math_class_value) {
         cur_cs = tex_active_to_cs(cur_chr, 1);
         cur_cmd = eq_type(cur_cs);
@@ -1744,7 +1751,7 @@ static int tex_aux_scan_active_math_char(mathcodeval *mval, int where)
         tex_x_token();
         tex_back_input(cur_tok);
         if (tracing_commands_par >= 4) {
-            tex_aux_report_active(where, "active", code, mval->character_value);
+            tex_aux_report_active(where, "active", code, character);
         }
         return 1;
     } else { 
