@@ -356,7 +356,6 @@ extern void       tex_aux_show_keyword_error      (const char *s);
 extern int        tex_scan_keyword                (const char *s);
 extern int        tex_scan_keyword_case_sensitive (const char *s);
 extern halfword   tex_active_to_cs                (int c, int force);
-extern halfword   tex_active_to_cs_set            (int c, int catcodetable);
 extern halfword   tex_string_to_toks              (const char *s);
 extern int        tex_get_char_cat_code           (int c);
 extern halfword   tex_get_token                   (void);
@@ -407,6 +406,11 @@ inline int        tex_valid_token                 (int t) { return ((t >= 0) && 
     U+FFFE  NOT A CHARACTER
     U+FFFF  NOT A CHARACTER 
 
+    I experimented with a namespace character (catcodtable id) as fourth character but there are 
+    some unwanted side effects, for instance in testing an active character as separator (in 
+    arguments) so that code waa eventually removed. I might come back to this one day (active 
+    characters in the catcode regime namespace).
+
 */
 
 # define utf_fffd_string            "\xEF\xBF\xBD" /* U+FFFD : 65533 */
@@ -419,7 +423,6 @@ inline int        tex_valid_token                 (int t) { return ((t >= 0) && 
 
 # define active_character_unknown   "\xEF\xBF\xBD" /* utf_fffd_string */
 
-//define active_cs_value(A) aux_str2uni((str_string((A))+4))
 # define active_cs_value(A) aux_str2uni((str_string((A))+3))
 
 # endif

@@ -836,7 +836,6 @@ void tex_initialize_commands(void)
         tex_primitive(tex_command,    "futurelet",                      let_cmd,                future_let_code,                          0);
         tex_primitive(luatex_command, "futuredef",                      let_cmd,                future_def_code,                          0);
         tex_primitive(luatex_command, "letcharcode",                    let_cmd,                let_charcode_code,                        0);
-        tex_primitive(luatex_command, "lettextcode",                    let_cmd,                let_textcode_code,                        0);
         tex_primitive(luatex_command, "swapcsvalues",                   let_cmd,                swap_cs_values_code,                      0);
         tex_primitive(luatex_command, "letprotected",                   let_cmd,                let_protected_code,                       0);
         tex_primitive(luatex_command, "unletprotected",                 let_cmd,                unlet_protected_code,                     0);

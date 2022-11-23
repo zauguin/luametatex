@@ -866,7 +866,6 @@ typedef enum let_codes {
     future_let_code,
     future_def_code,
     let_charcode_code,
-    let_textcode_code,
     swap_cs_values_code,
     let_protected_code,
     unlet_protected_code,

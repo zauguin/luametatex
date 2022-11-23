@@ -4495,13 +4495,11 @@ static void tex_aux_set_let(int a, int force)
             }
             break;
         case let_charcode_code:
-        case let_textcode_code:
             /*tex |\letcharcode| (todo: protection) */
             {
-                halfword catcodetable = code == let_textcode_code ? tex_scan_int(0, NULL) : -1; 
                 halfword character = tex_scan_int(0, NULL);
                 if (character > 0) {
-                    p = tex_active_to_cs_set(character, catcodetable);
+                    p = tex_active_to_cs(character, 1);
                     do {
                         tex_get_token();
                     } while (cur_cmd == spacer_cmd);
