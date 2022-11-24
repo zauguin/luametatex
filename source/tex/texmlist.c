@@ -2472,6 +2472,12 @@ static void tex_aux_make_delimited_radical(halfword target, int style, int size,
     halfword total = height + depth;
     delimiterextremes extremes = { .tfont = null_font, .tchar = 0, .bfont = null_font, .bchar = 0, .height = 0, .depth = 0 };
     noad_new_hlist(target) = null;
+    size += radical_size(target);
+    if (size < text_size) { 
+        size = text_size;
+    } else if (size > script_script_size) {
+        size = script_script_size;
+    }
     delimiter = tex_aux_make_delimiter(target, delimiter, size, total, 0, style, 2, NULL, NULL, 0, has_noad_option_nooverflow(target), &extremes, depth);
     if (companion) {
         /*tex For now we assume symmetry and same height and depth! */

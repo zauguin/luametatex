@@ -1040,6 +1040,9 @@ static void tex_aux_display_radical_noad(halfword n, int threshold, int max)
     if (radical_depth(n)) {
         tex_print_format(", depth %D", radical_depth(n), pt_unit);
     }
+    if (radical_size(n)) {
+        tex_print_format(", size %i", radical_size(n));
+    }
     if (noad_source(n) != 0) {
         tex_print_format(", source %i", noad_source(n));
     }
@@ -2615,7 +2618,7 @@ void tex_run_math_radical(void)
                 }
                 break;
             case 's': case 'S':
-                switch (tex_scan_character("toTO", 0, 0, 0)) {
+                switch (tex_scan_character("itoITO", 0, 0, 0)) {
                     case 't': case 'T':
                         if (tex_scan_mandate_keyword("style", 2)) {
                             switch (code) {
@@ -2635,6 +2638,11 @@ void tex_run_math_radical(void)
                     case 'o': case 'O':
                         if (tex_scan_mandate_keyword("source", 2)) {
                             noad_source(radical) = tex_scan_int(0, NULL);
+                        }
+                        break;
+                    case 'i': case 'I':
+                        if (tex_scan_mandate_keyword("size", 2)) {
+                            radical_size(radical) = tex_scan_int(0, NULL);
                         }
                         break;
                     default:

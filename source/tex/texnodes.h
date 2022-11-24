@@ -1965,6 +1965,7 @@ typedef enum fraction_subtypes {
 # define radical_degree          noad_extra_1
 # define radical_left_delimiter  noad_extra_2
 # define radical_right_delimiter noad_extra_3
+# define radical_size            noad_extra_4
 # define radical_height          noad_extra_5
 # define radical_depth           noad_extra_6
 
