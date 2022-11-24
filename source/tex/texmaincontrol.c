@@ -475,6 +475,25 @@ static void tex_aux_run_relax(void) {
     return;
 }
 
+static void tex_aux_run_active(void) {
+//     if (lmt_input_state.scanner_status == scanner_is_tolerant || lmt_input_state.scanner_status == scanner_is_matching) {
+//         cur_cs = tex_active_to_cs(cur_chr, ! lmt_hash_state.no_new_cs);
+//         cur_cmd = eq_type(cur_cs);
+//         cur_chr = eq_value(cur_cs);
+//         tex_x_token();
+//     } else 
+    if ((cur_mode == mmode || lmt_nest_state.math_mode) && tex_check_active_math_char(cur_chr)) {
+        /*tex We have an intercept. */
+        tex_back_input(cur_tok);
+    } else {
+        cur_cs = tex_active_to_cs(cur_chr, ! lmt_hash_state.no_new_cs);
+        cur_cmd = eq_type(cur_cs);
+        cur_chr = eq_value(cur_cs);
+        tex_x_token();
+        tex_back_input(cur_tok);
+    }
+}
+
 /*tex
 
     |ignore_spaces| is a special case: after it has acted, |get_x_token| has already fetched the
@@ -6355,6 +6374,8 @@ inline static void tex_aux_big_switch(int mode, int cmd)
         /* Just in case: */
 
         register_runner(ignore_cmd,             tex_aux_run_relax,                 tex_aux_run_relax,                  tex_aux_run_relax);
+
+        register_runner(active_char_cmd,        tex_aux_run_active,                tex_aux_run_active,                 tex_aux_run_active);
 
         /*tex The next is unlikely to happen but compilers like the check. */
 

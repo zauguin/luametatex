@@ -1715,6 +1715,16 @@ int tex_check_active_math_char(int character)
     }
 }
 
+int tex_pass_active_math_char(int character)
+{
+    halfword code = tex_get_am_code(character);
+    if (code) {
+        return 1;
+    } else { 
+        return 0;
+    }
+}
+
 static int tex_aux_scan_active_math_char(mathcodeval *mval, int where)
 {
     halfword character = mval->character_value;

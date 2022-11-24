@@ -625,6 +625,7 @@ halfword tex_show_token_list(halfword p, halfword q, int l, int asis)
                     case spacer_cmd:
                     case letter_cmd:
                     case other_char_cmd:
+                    case active_char_cmd: /* new */
                     case ignore_cmd: /* new */
                         tex_print_tex_str(chr);
                         break;
@@ -1195,7 +1196,11 @@ static int tex_aux_get_next_file(void)
             case new_line_state    + active_char_cmd:
             case skip_blanks_state + active_char_cmd:
                 /*tex Process an active-character. */
-                if ((cur_mode == mmode || lmt_nest_state.math_mode) && tex_check_active_math_char(cur_chr)) {
+                if ((lmt_input_state.scanner_status == scanner_is_tolerant || lmt_input_state.scanner_status == scanner_is_matching) && tex_pass_active_math_char(cur_chr)) {
+                    /*tex We need to intercept a delimiter in arguments. */
+                } else if ((lmt_input_state.scanner_status == scanner_is_defining || lmt_input_state.scanner_status == scanner_is_absorbing) && tex_pass_active_math_char(cur_chr)) {
+                    /*tex We are storing stuff in a token list or macro body. */
+                } else if ((cur_mode == mmode || lmt_nest_state.math_mode) && tex_check_active_math_char(cur_chr)) {
                     /*tex We have an intercept. */
                 } else { 
                     cur_cs = tex_active_to_cs(cur_chr, ! lmt_hash_state.no_new_cs);

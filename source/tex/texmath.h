@@ -625,6 +625,7 @@ extern void        tex_run_text_math_spec        (void);
 extern void     tex_set_default_math_codes       (void);
 
 extern int      tex_check_active_math_char       (int character);
+extern int      tex_pass_active_math_char        (int character);
 
 /*tex The runners in maincontrol: */
 
