@@ -304,6 +304,7 @@ void tex_expand_current_token(void)
                                             case spacer_cmd:
                                             case letter_cmd:
                                             case other_char_cmd:
+                                            case active_char_cmd: /* new */
                                                 cur_tok = token_val(cmd, eq_value(cur_cs));
                                                 break;
                                         }
@@ -618,12 +619,12 @@ static int tex_aux_collect_cs_tokens(halfword *p, int *n)
             case spacer_cmd:
             case letter_cmd:
             case other_char_cmd:
+            case active_char_cmd: /* new */
               // cur_tok = token_val(cur_cmd, cur_chr);
               // *p = tex_store_new_token(*p, cur_tok);
                  *p = tex_store_new_token(*p, token_val(cur_cmd, cur_chr));
                  *n += 1;
                  break;
-         /* case active_char_cmd: */
          /* case comment_cmd: */
          /* case invalid_char_cmd: */
             /*

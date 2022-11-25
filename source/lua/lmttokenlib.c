@@ -1874,6 +1874,7 @@ static int tokenlib_scan_next_char(lua_State *L)
             break;
         case letter_cmd:
         case other_char_cmd:
+        case active_char_cmd: /* needs testing */
             {
                 char buffer[6];
                 char *uindex = aux_uni2string((char *) buffer, (unsigned int) cur_chr);

@@ -3130,6 +3130,7 @@ char *tex_tokenlist_to_tstring(int pp, int inhibit_par, int *siz, int skippreamb
                             case spacer_cmd:
                             case letter_cmd:
                             case other_char_cmd:
+                            case active_char_cmd:
                                 if (! skip) {
                                     tex_aux_append_uchar_to_buffer(chr);
                                 }
