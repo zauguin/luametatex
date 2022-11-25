@@ -5514,6 +5514,15 @@ void tex_get_r_token(void)
         tex_get_token();
     } while (cur_tok == space_token);
     if (eqtb_invalid_cs(cur_cs)) {
+        if (cur_cmd == active_char_cmd) {
+            cur_cs = tex_active_to_cs(cur_chr, 1);
+            cur_cmd = eq_type(cur_cs);
+            cur_chr = eq_value(cur_cs);
+         // tex_x_token();
+         //  if (! eqtb_invalid_cs(cur_cs)) {
+            return;
+         //  }
+        }
         if (cur_cs == 0) {
             tex_back_input(cur_tok);
         }
